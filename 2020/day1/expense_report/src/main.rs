@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::error::Error;
 use std::fs;
 use std::process;
@@ -7,9 +8,10 @@ fn main() {
         println!("{:?}", err);
         process::exit(1)
     });
-    for (index, n) in contents.iter().enumerate() {
-        println!("{}: {}", index + 1, n);
-    }
+
+    let set_of_numbers = load_into_set(&contents);
+
+    println!("{:?}", set_of_numbers);
 }
 
 fn read_contents(filename: &str) -> Result<Vec<u32>, Box<dyn Error>> {
@@ -20,4 +22,14 @@ fn read_contents(filename: &str) -> Result<Vec<u32>, Box<dyn Error>> {
         .collect();
 
     Ok(parsed)
+}
+
+fn load_into_set(numbers: &[u32]) -> HashSet<u32> {
+    let mut result = HashSet::new();
+
+    for n in numbers {
+        result.insert(*n);
+    }
+
+    result
 }
