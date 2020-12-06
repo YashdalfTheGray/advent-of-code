@@ -11,7 +11,20 @@ fn main() {
 
     let set_of_numbers = load_into_set(&contents);
 
-    println!("{:?}", set_of_numbers);
+    let mut found_number = 0;
+    for n in contents {
+        if set_of_numbers.contains(&(2020 - n)) {
+            found_number = n;
+            break;
+        }
+    }
+
+    println!(
+        "Found {} and {} in the given list that add up to 2020.\nTheir product is {}",
+        found_number,
+        2020 - found_number,
+        found_number * (2020 - found_number)
+    );
 }
 
 fn read_contents(filename: &str) -> Result<Vec<u32>, Box<dyn Error>> {
