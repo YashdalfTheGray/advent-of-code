@@ -12,9 +12,19 @@ fn main() {
     let pair = searchers::find_pair_with_sum(&contents, 2020);
 
     println!(
-        "Found {} and {} in the given list that add up to 2020.\nTheir product is {}.",
+        "Found {} and {} to add up to 2020 in the list.\nTheir product is {}.",
         pair.0,
         pair.1,
         pair.0 * pair.1
     );
+
+    let triplet = searchers::find_triplets_with_sum(&contents, 2020);
+
+    println!(
+        "Found {}, {}, and {} to add up to 2020 in the list.\nTheir product is {}.",
+        triplet.0,
+        triplet.1,
+        triplet.2,
+        triplet.0 * triplet.1 * triplet.2
+    )
 }
