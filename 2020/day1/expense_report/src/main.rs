@@ -1,5 +1,6 @@
 use std::process;
 
+mod searchers;
 mod utils;
 
 fn main() {
@@ -8,20 +9,12 @@ fn main() {
         process::exit(1)
     });
 
-    let set_of_numbers = utils::load_into_set(&contents);
-
-    let mut found_number = 0;
-    for n in contents {
-        if set_of_numbers.contains(&(2020 - n)) {
-            found_number = n;
-            break;
-        }
-    }
+    let pair = searchers::find_pair_with_sum(&contents, 2020);
 
     println!(
-        "Found {} and {} in the given list that add up to 2020.\nTheir product is {}",
-        found_number,
-        2020 - found_number,
-        found_number * (2020 - found_number)
+        "Found {} and {} in the given list that add up to 2020.\nTheir product is {}.",
+        pair.0,
+        pair.1,
+        pair.0 * pair.1
     );
 }
