@@ -28,28 +28,38 @@ pub fn read_and_process(filename: &str) -> Result<usize, Box<dyn Error>> {
 
     let contents = fs::read_to_string(filename)?;
 
-    let matched: Vec<bool> = contents
-        .lines()
-        .map(|line| {
-            let captures = input_parser.captures(line).unwrap();
+    let range_matched = process_and_count(contents, |line| {
+        let captures = input_parser.captures(line).unwrap();
 
-            Constraint::new(
-                parse_to_usize(&captures[1]),
-                parse_to_usize(&captures[2]),
-                parse_to_char(&captures[3]),
-            )
-            .validate_range((&captures[4]).to_string())
-        })
-        .collect();
+        Constraint::new(
+            parse_to_usize(&captures[1]),
+            parse_to_usize(&captures[2]),
+            parse_to_char(&captures[3]),
+        )
+        .validate_range((&captures[4]).to_string())
+    });
 
-    Ok(matched.iter().filter(|&n| *n).count())
+    Ok(range_matched)
 }
 
-pub fn parse_to_usize(int_as_string: &str) -> usize {
+fn parse_to_usize(int_as_string: &str) -> usize {
     int_as_string.parse::<usize>().unwrap()
 }
 
-pub fn parse_to_char(char_as_string: &str) -> char {
+fn parse_to_char(char_as_string: &str) -> char {
     let char_vector: Vec<char> = char_as_string.chars().collect();
     char_vector[0]
+}
+
+fn process_and_count<F>(content: String, matcher: F) -> usize
+where
+    F: FnMut(&str) -> bool,
+{
+    content
+        .lines()
+        .map(matcher)
+        .collect::<Vec<bool>>()
+        .iter()
+        .filter(|&n| *n)
+        .count()
 }
