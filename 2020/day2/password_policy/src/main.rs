@@ -8,5 +8,12 @@ fn main() {
         process::exit(1)
     });
 
-    println!("There were {} passwords that match their scheme.", contents);
+    println!(
+        "There were {} passwords that match the range scheme.",
+        contents.0
+    );
+    println!(
+        "There were {} passwords that match the location scheme.",
+        contents.1
+    );
 }
