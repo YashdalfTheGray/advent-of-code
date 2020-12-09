@@ -12,7 +12,7 @@ pub fn read_into_matrix(filename: &str) -> Result<Vec<Vec<char>>, Box<dyn Error>
     Ok(parsed)
 }
 
-pub fn traverse(grid: Vec<Vec<char>>, hmove: u32, vmove: u32) -> Vec<char> {
+pub fn traverse(grid: &[Vec<char>], hmove: u32, vmove: u32) -> Vec<char> {
     let mut result = vec![result_at(grid[0][0])];
     let mut vindex = vmove as usize;
     let mut hindex = hmove as usize;
