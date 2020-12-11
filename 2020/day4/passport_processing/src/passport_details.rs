@@ -6,12 +6,6 @@ pub struct PassportParseError {
     failed_string: String,
 }
 
-impl PassportParseError {
-    fn new(failed_string: String) -> PassportParseError {
-        PassportParseError { failed_string }
-    }
-}
-
 impl fmt::Display for PassportParseError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
@@ -32,13 +26,29 @@ pub struct PassportDetails {
     ecl: String,
     pid: String,
     cid: String,
+    pub unparsed: Vec<String>,
+}
+
+impl PassportDetails {
+    pub fn is_valid(&self) -> bool {
+        !self.byr.is_empty()
+            && !self.iyr.is_empty()
+            && !self.eyr.is_empty()
+            && !self.hgt.is_empty()
+            && !self.hcl.is_empty()
+            && !self.ecl.is_empty()
+            && !self.pid.is_empty()
+    }
 }
 
 impl FromStr for PassportDetails {
     type Err = PassportParseError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let parts = s.split(' ').map(|s| s.to_string()).collect::<Vec<String>>();
+        let parts = s
+            .split(' ')
+            .map(|s| s.trim().to_string())
+            .collect::<Vec<String>>();
 
         let mut byr = "".to_string();
         let mut cid = "".to_string();
@@ -48,7 +58,7 @@ impl FromStr for PassportDetails {
         let mut hgt = "".to_string();
         let mut iyr = "".to_string();
         let mut pid = "".to_string();
-        let mut parse_error = false;
+        let mut unparsed = vec![];
 
         for part in parts {
             let key_value_pair = part.split(':').collect::<Vec<&str>>();
@@ -61,12 +71,8 @@ impl FromStr for PassportDetails {
                 ["hgt", value, ..] => hgt = value.to_string(),
                 ["iyr", value, ..] => iyr = value.to_string(),
                 ["pid", value, ..] => pid = value.to_string(),
-                [&_, _, ..] | [_] | [] => parse_error = true,
+                [&_, _, ..] | [_] | [] => unparsed.push(part),
             }
-        }
-
-        if parse_error {
-            return Err(PassportParseError::new(s.to_string()));
         }
 
         Ok(PassportDetails {
@@ -78,6 +84,7 @@ impl FromStr for PassportDetails {
             hgt,
             iyr,
             pid,
+            unparsed,
         })
     }
 }
