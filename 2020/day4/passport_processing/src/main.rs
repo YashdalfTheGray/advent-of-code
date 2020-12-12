@@ -8,7 +8,7 @@ mod passport_details;
 mod utils;
 
 fn main() {
-    let passport_collection = utils::read_into_collection("test-2-input").unwrap_or_else(|err| {
+    let passport_collection = utils::read_into_collection("input").unwrap_or_else(|err| {
         println!("{:?}", err);
         process::exit(1)
     });

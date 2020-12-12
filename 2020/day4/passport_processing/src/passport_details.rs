@@ -4,9 +4,9 @@ use std::str::FromStr;
 use regex::Regex;
 
 lazy_static! {
-    static ref HEIGHT_MATCHER: Regex = Regex::new("([0-9]*)(cm|in)").unwrap();
-    static ref HAIR_COLOR_MATCHER: Regex = Regex::new("#[0-9a-f]{6}").unwrap();
-    static ref PASSPORT_NUMBER_MATCHER: Regex = Regex::new("[0-9]{9}").unwrap();
+    static ref HEIGHT_MATCHER: Regex = Regex::new("^([0-9]*)(cm|in)$").unwrap();
+    static ref HAIR_COLOR_MATCHER: Regex = Regex::new("^#[0-9a-f]{6}$").unwrap();
+    static ref PASSPORT_NUMBER_MATCHER: Regex = Regex::new("^[0-9]{9}$").unwrap();
     static ref VALID_EYE_COLORS: Vec<&'static str> =
         vec!["amb", "blu", "brn", "gry", "grn", "hzl", "oth"];
 }
@@ -63,23 +63,26 @@ impl PassportDetails {
     }
 
     fn is_eyr_valid(&self) -> bool {
-        let parsed_year = self.iyr.parse::<u16>().unwrap_or(0);
+        let parsed_year = self.eyr.parse::<u16>().unwrap_or(0);
 
         !self.eyr.is_empty() && parsed_year >= 2020 && parsed_year <= 2030
     }
 
     fn is_hgt_valid(&self) -> bool {
-        let captures = HEIGHT_MATCHER.captures(&(self.hgt)).unwrap();
-        let height = (&captures[1]).parse::<u16>().unwrap_or(0);
-        let unit = &captures[2];
+        !self.hgt.is_empty() && {
+            let captures = HEIGHT_MATCHER
+                .captures(&(self.hgt))
+                .unwrap_or_else(|| HEIGHT_MATCHER.captures("0in").unwrap());
 
-        !self.hgt.is_empty()
-            && match unit {
+            let height = (&captures[1]).parse::<u16>().unwrap_or(0);
+            let unit = &captures[2];
+            match unit {
                 "cm" => height >= 150 && height <= 193,
                 "in" => height >= 59 && height <= 76,
                 "" => false,
                 &_ => false,
             }
+        }
     }
 
     fn is_hcl_valid(&self) -> bool {
