@@ -1,6 +1,16 @@
 use std::fmt;
 use std::str::FromStr;
 
+use regex::Regex;
+
+lazy_static! {
+    static ref HEIGHT_MATCHER: Regex = Regex::new("([0-9]*)(cm|in)").unwrap();
+    static ref HAIR_COLOR_MATCHER: Regex = Regex::new("#[0-9a-f]{6}").unwrap();
+    static ref PASSPORT_NUMBER_MATCHER: Regex = Regex::new("[0-9]{9}").unwrap();
+    static ref VALID_EYE_COLORS: Vec<&'static str> =
+        vec!["amb", "blu", "brn", "gry", "grn", "hzl", "oth"];
+}
+
 #[derive(Debug, Clone)]
 pub struct PassportParseError {
     failed_string: String,
@@ -31,13 +41,57 @@ pub struct PassportDetails {
 
 impl PassportDetails {
     pub fn is_valid(&self) -> bool {
-        !self.byr.is_empty()
-            && !self.iyr.is_empty()
-            && !self.eyr.is_empty()
-            && !self.hgt.is_empty()
-            && !self.hcl.is_empty()
-            && !self.ecl.is_empty()
-            && !self.pid.is_empty()
+        self.is_byr_valid()
+            && self.is_iyr_valid()
+            && self.is_eyr_valid()
+            && self.is_hgt_valid()
+            && self.is_hcl_valid()
+            && self.is_ecl_valid()
+            && self.is_pid_valid()
+    }
+
+    fn is_byr_valid(&self) -> bool {
+        let parsed_year = self.byr.parse::<u16>().unwrap_or(0);
+
+        !self.byr.is_empty() && parsed_year >= 1920 && parsed_year <= 2002
+    }
+
+    fn is_iyr_valid(&self) -> bool {
+        let parsed_year = self.iyr.parse::<u16>().unwrap_or(0);
+
+        !self.iyr.is_empty() && parsed_year >= 2010 && parsed_year <= 2020
+    }
+
+    fn is_eyr_valid(&self) -> bool {
+        let parsed_year = self.iyr.parse::<u16>().unwrap_or(0);
+
+        !self.eyr.is_empty() && parsed_year >= 2020 && parsed_year <= 2030
+    }
+
+    fn is_hgt_valid(&self) -> bool {
+        let captures = HEIGHT_MATCHER.captures(&(self.hgt)).unwrap();
+        let height = (&captures[1]).parse::<u16>().unwrap_or(0);
+        let unit = &captures[2];
+
+        !self.hgt.is_empty()
+            && match unit {
+                "cm" => height >= 150 && height <= 193,
+                "in" => height >= 59 && height <= 76,
+                "" => false,
+                &_ => false,
+            }
+    }
+
+    fn is_hcl_valid(&self) -> bool {
+        !self.hcl.is_empty() && HAIR_COLOR_MATCHER.is_match(&(self.hcl))
+    }
+
+    fn is_ecl_valid(&self) -> bool {
+        !self.ecl.is_empty() && VALID_EYE_COLORS.contains(&(&(self.ecl)[..]))
+    }
+
+    fn is_pid_valid(&self) -> bool {
+        !self.pid.is_empty() && PASSPORT_NUMBER_MATCHER.is_match(&(self.pid))
     }
 }
 
