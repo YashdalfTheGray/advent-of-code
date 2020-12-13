@@ -18,10 +18,18 @@ fn main() {
         sanity_checks.push((row * 8) + col);
     }
 
-    let max_sanity_check = sanity_checks.iter().max().unwrap();
+    sanity_checks.sort_unstable();
+
+    let min = sanity_checks[0] as u32;
+    let max = sanity_checks[sanity_checks.len() - 1] as u32;
+    let mut sum = (((max - min) + 1) / 2) * (max + min);
+    sanity_checks.iter().for_each(|&c| {
+        sum -= c as u32;
+    });
 
     println!(
-        "The highest sanity check amongst given boarding passes is {}.",
-        max_sanity_check
+        "The largest sanity check in the given boarding passes is {}.",
+        max
     );
+    println!("The calculated missing sanity check is {}", sum);
 }
