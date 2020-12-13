@@ -1,14 +1,27 @@
-use std::process;
+use std::{collections::HashSet, process};
 
 mod utils;
 
 fn main() {
-    let customs_answers = utils::read_into_collection("test-input").unwrap_or_else(|err| {
+    let customs_answers = utils::read_into_collection("input").unwrap_or_else(|err| {
         println!("{:?}", err);
         process::exit(1)
     });
 
-    customs_answers.iter().for_each(|a| {
-        println!("{}", a);
-    })
+    let unique_answers = customs_answers
+        .iter()
+        .map(|s| {
+            let mut result = HashSet::new();
+            s.chars().for_each(|c| {
+                result.insert(c);
+            });
+            result
+        })
+        .map(|hs| hs.len())
+        .collect::<Vec<usize>>();
+
+    println!(
+        "The sum of all unique answers across all groups in the given input is {}",
+        unique_answers.iter().sum::<usize>()
+    )
 }
