@@ -1,4 +1,7 @@
-use std::{collections::HashSet, process};
+use std::{
+    collections::{HashMap, HashSet},
+    process,
+};
 
 mod utils;
 
@@ -10,6 +13,7 @@ fn main() {
 
     let unique_answers = customs_answers
         .iter()
+        .map(|s| s.replacen(" ", "", 100))
         .map(|s| {
             let mut result = HashSet::new();
             s.chars().for_each(|c| {
