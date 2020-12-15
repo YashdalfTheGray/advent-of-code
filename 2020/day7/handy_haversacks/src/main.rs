@@ -12,5 +12,13 @@ fn main() {
         process::exit(1)
     });
 
-    println!("{:?}", bag_details)
+    let parsed_bag_details = utils::parse_bag_rules(bag_details);
+    for d in parsed_bag_details {
+        let contained_bags = d.1;
+        utils::parse_bag_details(contained_bags)
+            .iter()
+            .for_each(|b| {
+                println!("{:#?}", b);
+            })
+    }
 }
