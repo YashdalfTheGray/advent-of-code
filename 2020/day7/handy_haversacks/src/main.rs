@@ -12,13 +12,17 @@ fn main() {
         process::exit(1)
     });
 
-    let parsed_bag_details = utils::parse_bag_rules(bag_details);
-    for d in parsed_bag_details {
-        let contained_bags = d.1;
-        utils::parse_bag_details(contained_bags)
-            .iter()
-            .for_each(|b| {
-                println!("{:#?}", b);
-            })
-    }
+    let partial_bag_rules = utils::parse_bag_rules(bag_details);
+
+    let parsed_bag_rules = partial_bag_rules
+        .iter()
+        .map(|r| {
+            let contained_bags = &r.1;
+            let parsed_contained_bags = utils::parse_bag_details(contained_bags.to_vec());
+            (&(r.0)[..], parsed_contained_bags)
+        })
+        .map(|r| (r.0.to_string(), r.1))
+        .collect::<Vec<(String, Vec<(u16, String)>)>>();
+
+    println!("{:#?}", parsed_bag_rules);
 }
