@@ -4,6 +4,9 @@ extern crate regex;
 
 use std::process;
 
+use bag_graph::BagNode;
+
+mod bag_graph;
 mod utils;
 
 fn main() {
@@ -21,8 +24,17 @@ fn main() {
             let parsed_contained_bags = utils::parse_bag_details(contained_bags.to_vec());
             (&(r.0)[..], parsed_contained_bags)
         })
-        .map(|r| (r.0.to_string(), r.1))
-        .collect::<Vec<(String, Vec<(u16, String)>)>>();
+        .map(|r| {
+            let contained_bag_nodes =
+                r.1.iter()
+                    .map(|r| BagNode::new(&(r.1)[..], r.0))
+                    .collect::<Vec<BagNode>>();
+
+            let parent_bag_node = BagNode::new(&r.0.to_string(), 1);
+
+            (parent_bag_node, contained_bag_nodes)
+        })
+        .collect::<Vec<(BagNode, Vec<bag_graph::BagNode>)>>();
 
     println!("{:#?}", parsed_bag_rules);
 }

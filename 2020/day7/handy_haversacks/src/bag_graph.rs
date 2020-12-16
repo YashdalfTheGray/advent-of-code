@@ -1,5 +1,4 @@
-use petgraph::Graph;
-
+#[derive(Debug)]
 pub struct BagNode {
     kind: String,
     quantity: u16,
@@ -7,6 +6,9 @@ pub struct BagNode {
 
 impl BagNode {
     pub fn new(kind: &str, quantity: u16) -> BagNode {
-        BagNode { kind, quantity }
+        BagNode {
+            kind: kind.to_string(),
+            quantity,
+        }
     }
 }
