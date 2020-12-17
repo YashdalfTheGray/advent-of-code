@@ -1,3 +1,5 @@
+use petgraph::Graph;
+
 #[derive(Debug)]
 pub struct BagNode {
     pub kind: String,
@@ -35,4 +37,23 @@ pub fn get_fully_parsed_bag_rules(
             (parent_bag_node, contained_bag_nodes)
         })
         .collect::<Vec<(BagNode, Vec<BagNode>)>>()
+}
+
+pub fn load_into_graph(rules: Vec<(BagNode, Vec<BagNode>)>) -> Graph<String, u32> {
+    let mut bags = Graph::<String, u32>::new();
+    let root = bags.add_node("Start".to_string());
+
+    rules.iter().for_each(|r| {
+        let parent = bags.add_node(r.0.kind.clone());
+        bags.add_edge(root, parent, r.0.quantity);
+
+        r.1.iter().for_each(|b| {
+            if b.quantity != 0 {
+                let bag = bags.add_node(b.kind.clone());
+                bags.add_edge(parent, bag, b.quantity);
+            }
+        })
+    });
+
+    bags
 }
