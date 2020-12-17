@@ -22,15 +22,28 @@ fn main() {
 
     let parsed_bag_rules = bag_graph::get_fully_parsed_bag_rules(partial_bag_rules);
 
-    let mut deps = Graph::<&str, &str>::new();
-    let pg = deps.add_node("petgraph");
-    let fb = deps.add_node("fixedbitset");
-    let qc = deps.add_node("quickcheck");
-    let rand = deps.add_node("rand");
-    let libc = deps.add_node("libc");
-    deps.extend_with_edges(&[(pg, fb), (pg, qc), (qc, rand), (rand, libc), (qc, libc)]);
+    let mut bags = Graph::<String, u32>::new();
+    let root = bags.add_node("Start".to_string());
 
-    println!("{:#?}", parsed_bag_rules);
+    parsed_bag_rules.iter().for_each(|r| {
+        let parent = bags.add_node(r.0.kind.clone());
+        bags.add_edge(root, parent, r.0.quantity);
 
-    println!("{:?}", Dot::with_config(&deps, &[Config::EdgeNoLabel]));
+        r.1.iter().for_each(|b| {
+            if b.quantity != 0 {
+                let bag = bags.add_node(b.kind.clone());
+                bags.add_edge(parent, bag, b.quantity);
+            }
+        })
+    });
+
+    println!(
+        "{:?}",
+        Dot::with_attr_getters(
+            &bags,
+            &[Config::EdgeNoLabel],
+            &|_, edge| format!("label = \"{}\"", edge.weight()),
+            &|_, node| format!("label = \"{}\"", node.1.to_lowercase())
+        )
+    );
 }

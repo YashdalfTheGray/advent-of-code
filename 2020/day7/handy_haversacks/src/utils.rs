@@ -31,15 +31,15 @@ pub fn parse_bag_rules(bag_rules: Vec<String>) -> Vec<(String, Vec<String>)> {
         .collect::<Vec<(String, Vec<String>)>>()
 }
 
-pub fn parse_bag_details(bag_details: Vec<String>) -> Vec<(u16, String)> {
+pub fn parse_bag_details(bag_details: Vec<String>) -> Vec<(u32, String)> {
     bag_details
         .iter()
         .map(|s| {
             let details = BAG_DETAIL_REGEX.captures(s).unwrap();
 
-            let number = details[1].parse::<u16>().unwrap_or(0);
+            let number = details[1].parse::<u32>().unwrap_or(0);
 
             (number, details[2].to_string())
         })
-        .collect::<Vec<(u16, String)>>()
+        .collect::<Vec<(u32, String)>>()
 }

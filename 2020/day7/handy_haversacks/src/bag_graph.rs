@@ -1,11 +1,11 @@
 #[derive(Debug)]
 pub struct BagNode {
-    kind: String,
-    quantity: u16,
+    pub kind: String,
+    pub quantity: u32,
 }
 
 impl BagNode {
-    pub fn new(kind: &str, quantity: u16) -> BagNode {
+    pub fn new(kind: &str, quantity: u32) -> BagNode {
         BagNode {
             kind: kind.to_string(),
             quantity,
