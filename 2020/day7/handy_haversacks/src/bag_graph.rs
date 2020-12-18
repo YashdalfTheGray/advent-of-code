@@ -1,4 +1,7 @@
-use petgraph::Graph;
+use petgraph::{
+    dot::{Config, Dot},
+    Graph,
+};
 
 #[derive(Debug)]
 pub struct BagNode {
@@ -41,11 +44,12 @@ pub fn get_fully_parsed_bag_rules(
 
 pub fn load_into_graph(rules: Vec<(BagNode, Vec<BagNode>)>) -> Graph<String, u32> {
     let mut bags = Graph::<String, u32>::new();
-    let root = bags.add_node("Start".to_string());
 
     rules.iter().for_each(|r| {
-        let parent = bags.add_node(r.0.kind.clone());
-        bags.add_edge(root, parent, r.0.quantity);
+        let parent = match bags.node_indices().find(|i| bags[*i] == r.0.kind) {
+            Some(found_node) => found_node,
+            None => bags.add_node(r.0.kind.clone()),
+        };
 
         r.1.iter().for_each(|b| {
             if b.quantity != 0 {
@@ -56,4 +60,14 @@ pub fn load_into_graph(rules: Vec<(BagNode, Vec<BagNode>)>) -> Graph<String, u32
     });
 
     bags
+}
+
+pub fn dot_format_string(graph: Graph<String, u32>) -> String {
+    Dot::with_attr_getters(
+        &graph,
+        &[Config::EdgeNoLabel],
+        &|_, edge| format!("label = \"{}\"", edge.weight()),
+        &|_, _| "".to_string(),
+    )
+    .to_string()
 }
