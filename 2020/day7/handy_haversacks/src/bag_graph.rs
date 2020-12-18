@@ -1,5 +1,6 @@
 use petgraph::{
     dot::{Config, Dot},
+    graph::NodeIndex,
     Graph,
 };
 
@@ -46,14 +47,11 @@ pub fn load_into_graph(rules: Vec<(BagNode, Vec<BagNode>)>) -> Graph<String, u32
     let mut bags = Graph::<String, u32>::new();
 
     rules.iter().for_each(|r| {
-        let parent = match bags.node_indices().find(|i| bags[*i] == r.0.kind) {
-            Some(found_node) => found_node,
-            None => bags.add_node(r.0.kind.clone()),
-        };
+        let parent = create_or_find_node(&mut bags, r.0.kind.clone());
 
         r.1.iter().for_each(|b| {
             if b.quantity != 0 {
-                let bag = bags.add_node(b.kind.clone());
+                let bag = create_or_find_node(&mut bags, b.kind.clone());
                 bags.add_edge(parent, bag, b.quantity);
             }
         })
@@ -70,4 +68,11 @@ pub fn dot_format_string(graph: Graph<String, u32>) -> String {
         &|_, _| "".to_string(),
     )
     .to_string()
+}
+
+fn create_or_find_node(graph: &mut Graph<String, u32>, name: String) -> NodeIndex {
+    match graph.node_indices().find(|i| graph[*i] == name) {
+        Some(found_node) => found_node,
+        None => graph.add_node(name),
+    }
 }
