@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use petgraph::{
     dot::{Config, Dot},
     graph::NodeIndex,
@@ -68,6 +70,23 @@ pub fn dot_format_string(graph: Graph<String, u32>) -> String {
         &|_, _| "".to_string(),
     )
     .to_string()
+}
+
+pub fn count_bags(graph: Graph<String, u32>, start: NodeIndex) -> usize {
+    let mut result = HashSet::<NodeIndex>::new();
+    count_bags_helper(graph, start, &mut result);
+    result.len()
+}
+
+fn count_bags_helper(
+    graph: Graph<String, u32>,
+    start: NodeIndex,
+    output_set: &mut HashSet<NodeIndex>,
+) {
+    for neighbor in graph.neighbors_directed(start, petgraph::EdgeDirection::Incoming) {
+        output_set.insert(neighbor);
+        count_bags_helper(graph.clone(), neighbor, output_set);
+    }
 }
 
 fn create_or_find_node(graph: &mut Graph<String, u32>, name: String) -> NodeIndex {
