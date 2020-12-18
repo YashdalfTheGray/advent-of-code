@@ -1,5 +1,6 @@
-use std::error::Error;
 use std::fs;
+use std::io::prelude::*;
+use std::{error::Error, fs::File, path::Path};
 
 use regex::Regex;
 
@@ -42,4 +43,19 @@ pub fn parse_bag_details(bag_details: Vec<String>) -> Vec<(u32, String)> {
             (number, details[2].to_string())
         })
         .collect::<Vec<(u32, String)>>()
+}
+
+pub fn write_string_to_file(s: String, path: String) {
+    let path = Path::new(&path);
+    let display = path.display();
+
+    let mut file = match File::create(&path) {
+        Err(why) => panic!("couldn't create {}: {}", display, why),
+        Ok(file) => file,
+    };
+
+    match file.write_all(s.as_bytes()) {
+        Err(why) => panic!("couldn't write to {}: {}", display, why),
+        Ok(_) => println!("successfully wrote to {}", display),
+    }
 }
