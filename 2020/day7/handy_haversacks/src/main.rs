@@ -8,7 +8,7 @@ mod bag_graph;
 mod utils;
 
 fn main() {
-    let filename = "input";
+    let filename = "test-input";
     let bag_to_start_with = "shiny gold";
 
     let bag_details = utils::read_into_collection(filename).unwrap_or_else(|err| {
@@ -27,10 +27,15 @@ fn main() {
         .node_indices()
         .find(|i| bags[*i] == bag_to_start_with)
         .unwrap();
-    let number = bag_graph::count_containing_bags(bags, start);
+    let containing = bag_graph::count_containing_bags(bags.clone(), start);
+    let contained = bag_graph::count_bags_contained(bags, start);
 
     println!(
         "The number of bags that can contain at least one {} bag is {}.",
-        bag_to_start_with, number
+        bag_to_start_with, containing
     );
+    println!(
+        "The total number of bags contained within a {} bag is {}",
+        bag_to_start_with, contained
+    )
 }
