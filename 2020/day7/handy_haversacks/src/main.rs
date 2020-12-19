@@ -27,7 +27,7 @@ fn main() {
         .node_indices()
         .find(|i| bags[*i] == bag_to_start_with)
         .unwrap();
-    let number = bag_graph::count_bags(bags, start);
+    let number = bag_graph::count_containing_bags(bags, start);
 
     println!(
         "The number of bags that can contain at least one {} bag is {}.",

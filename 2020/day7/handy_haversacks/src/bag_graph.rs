@@ -72,7 +72,7 @@ pub fn dot_format_string(graph: Graph<String, u32>) -> String {
     .to_string()
 }
 
-pub fn count_bags(graph: Graph<String, u32>, start: NodeIndex) -> usize {
+pub fn count_containing_bags(graph: Graph<String, u32>, start: NodeIndex) -> usize {
     let mut result = HashSet::<NodeIndex>::new();
     count_bags_helper(graph, start, &mut result);
     result.len()
