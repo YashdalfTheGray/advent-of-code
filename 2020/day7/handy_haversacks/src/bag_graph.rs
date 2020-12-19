@@ -82,12 +82,12 @@ pub fn count_bags_contained(graph: Graph<String, u32>, start: NodeIndex) -> u32 
     let mut result: u32 = 0;
 
     for neighbor in graph.neighbors_directed(start, petgraph::EdgeDirection::Outgoing) {
-        result += match graph.clone().find_edge(start, neighbor) {
+        let how_many = match graph.clone().find_edge(start, neighbor) {
             Some(edge) => graph.edge_weight(edge).unwrap_or(&0),
             None => &0,
         };
 
-        result += count_bags_contained(graph.clone(), neighbor)
+        result += how_many + (how_many * count_bags_contained(graph.clone(), neighbor))
     }
 
     result

@@ -8,7 +8,7 @@ mod bag_graph;
 mod utils;
 
 fn main() {
-    let filename = "test-input";
+    let filename = "input";
     let bag_to_start_with = "shiny gold";
 
     let bag_details = utils::read_into_collection(filename).unwrap_or_else(|err| {
