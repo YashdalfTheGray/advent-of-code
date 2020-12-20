@@ -22,6 +22,7 @@ impl fmt::Display for CodeParseError {
     }
 }
 
+#[derive(Debug)]
 pub struct CodeLine {
     pub instruction: String,
     pub offset: i32,
