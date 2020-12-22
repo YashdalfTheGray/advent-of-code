@@ -25,6 +25,6 @@ fn main() {
         .map(|s| s.parse::<CodeLine>().unwrap())
         .collect::<Vec<CodeLine>>();
 
-    let processor = CodeProcessor::new();
+    let mut processor = CodeProcessor::new();
     processor.execute(code_lines);
 }
