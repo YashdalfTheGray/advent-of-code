@@ -5,8 +5,10 @@ extern crate regex;
 use std::process;
 
 use code_line::CodeLine;
+use code_processor::CodeProcessor;
 
 mod code_line;
+mod code_processor;
 mod utils;
 
 fn main() {
@@ -23,7 +25,6 @@ fn main() {
         .map(|s| s.parse::<CodeLine>().unwrap())
         .collect::<Vec<CodeLine>>();
 
-    for l in code_lines {
-        println!("{:#?}", l);
-    }
+    let processor = CodeProcessor::new();
+    processor.execute(code_lines);
 }
