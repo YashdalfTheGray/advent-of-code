@@ -26,7 +26,6 @@ impl fmt::Display for CodeParseError {
 pub struct CodeLine {
     pub instruction: String,
     pub offset: i32,
-    pub executed: bool,
 }
 
 impl FromStr for CodeLine {
@@ -41,7 +40,6 @@ impl FromStr for CodeLine {
         Ok(CodeLine {
             instruction: parts[0].clone(),
             offset: parts[1].parse::<i32>().unwrap(),
-            executed: false,
         })
     }
 }
