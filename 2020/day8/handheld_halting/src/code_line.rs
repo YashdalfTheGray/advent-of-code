@@ -7,6 +7,14 @@ lazy_static! {
     static ref CODE_LINE_REGEX: Regex = Regex::new(r#"^(nop|jmp|acc) ((\+|-)([0-9]*))$"#).unwrap();
 }
 
+#[derive(Debug)]
+pub enum Instructions {
+    NOP,
+    ACC,
+    JMP,
+    UNRECOGNIZED,
+}
+
 #[derive(Debug, Clone)]
 pub struct CodeParseError {
     failed_string: String,
@@ -24,7 +32,7 @@ impl fmt::Display for CodeParseError {
 
 #[derive(Debug)]
 pub struct CodeLine {
-    pub instruction: String,
+    pub instruction: Instructions,
     pub offset: i32,
 }
 
@@ -37,8 +45,15 @@ impl FromStr for CodeLine {
             .map(|s| s.trim().to_string())
             .collect::<Vec<String>>();
 
+        let instruction = match &parts[0][..] {
+            "nop" => Instructions::NOP,
+            "acc" => Instructions::ACC,
+            "jmp" => Instructions::JMP,
+            "" | &_ => Instructions::UNRECOGNIZED,
+        };
+
         Ok(CodeLine {
-            instruction: parts[0].clone(),
+            instruction,
             offset: parts[1].parse::<i32>().unwrap(),
         })
     }
