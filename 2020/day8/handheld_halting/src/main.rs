@@ -26,5 +26,5 @@ fn main() {
         .collect::<Vec<CodeLine>>();
 
     let mut processor = CodeProcessor::new();
-    processor.execute(code_lines);
+    processor.execute(code_lines, false);
 }
