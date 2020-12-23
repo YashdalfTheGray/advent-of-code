@@ -27,5 +27,13 @@ fn main() {
         .collect::<Vec<CodeLine>>();
 
     let mut processor = CodeProcessor::new();
-    processor.execute(code_lines, false);
+    let result = processor.execute(code_lines, false);
+    match result {
+        enums::ExitResult::Exited => {
+            println!("Program exited.\n{}", processor);
+        }
+        enums::ExitResult::InfiniteLoop => {
+            println!("Program causes an infinite loop.\n{}", processor);
+        }
+    }
 }

@@ -1,7 +1,7 @@
 use std::{collections::HashSet, fmt};
 
-use crate::code_line::CodeLine;
 use crate::enums::Instructions;
+use crate::{code_line::CodeLine, enums::ExitResult};
 
 pub struct CodeProcessor {
     acc: i32,
@@ -13,7 +13,7 @@ impl CodeProcessor {
         CodeProcessor { acc: 0, pc: 0 }
     }
 
-    pub fn execute(&mut self, code: Vec<CodeLine>, debug: bool) {
+    pub fn execute(&mut self, code: Vec<CodeLine>, debug: bool) -> ExitResult {
         let mut visited_set: HashSet<u32> = HashSet::new();
 
         loop {
@@ -23,16 +23,11 @@ impl CodeProcessor {
             }
 
             if (self.pc as usize) > (code.len() - 1) {
-                println!("{}", self);
-                break;
+                return ExitResult::Exited;
             }
 
             if visited_set.contains(&self.pc) {
-                println!(
-                    "Loop found in the code. The accumulator is {} and the program counter is at {}.",
-                    self.acc, self.pc
-                );
-                break;
+                return ExitResult::InfiniteLoop;
             } else {
                 visited_set.insert(self.pc);
                 match current_line.instruction {
@@ -59,11 +54,6 @@ impl CodeProcessor {
                 }
             }
         }
-
-        println!(
-            "The program terminated normally. Accumulator value is at {}",
-            self.acc
-        );
     }
 }
 
