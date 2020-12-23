@@ -56,6 +56,11 @@ impl CodeProcessor {
                 }
             }
         }
+
+        println!(
+            "The program terminated normally. Accumulator value is at {}",
+            self.acc
+        );
     }
 }
 
