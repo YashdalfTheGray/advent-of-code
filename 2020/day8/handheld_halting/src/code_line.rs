@@ -3,28 +3,10 @@ use std::str::FromStr;
 
 use regex::Regex;
 
+use crate::enums::Instructions;
+
 lazy_static! {
     static ref CODE_LINE_REGEX: Regex = Regex::new(r#"^(nop|jmp|acc) ((\+|-)([0-9]*))$"#).unwrap();
-}
-
-#[derive(Debug)]
-pub enum Instructions {
-    NOP,
-    ACC,
-    JMP,
-    UNRECOGNIZED,
-}
-
-impl fmt::Display for Instructions {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let output = match self {
-            Instructions::ACC => "acc",
-            Instructions::NOP => "nop",
-            Instructions::JMP => "jmp",
-            Instructions::UNRECOGNIZED => "<!unrecognized!>",
-        };
-        write!(f, "{}", output)
-    }
 }
 
 #[derive(Debug, Clone)]

@@ -9,6 +9,7 @@ use code_processor::CodeProcessor;
 
 mod code_line;
 mod code_processor;
+mod enums;
 mod utils;
 
 fn main() {

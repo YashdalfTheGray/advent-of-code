@@ -1,7 +1,7 @@
 use std::{collections::HashSet, fmt};
 
 use crate::code_line::CodeLine;
-use crate::code_line::Instructions;
+use crate::enums::Instructions;
 
 pub struct CodeProcessor {
     acc: i32,
