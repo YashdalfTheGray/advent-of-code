@@ -19,3 +19,19 @@ impl fmt::Display for Instructions {
         write!(f, "{}", output)
     }
 }
+
+#[derive(Debug)]
+pub enum RunResult {
+    Exited,
+    InfiniteLoop,
+}
+
+impl fmt::Display for RunResult {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let output = match self {
+            RunResult::Exited => "exited",
+            RunResult::InfiniteLoop => "InfiniteLoop",
+        };
+        write!(f, "{}", output)
+    }
+}
