@@ -13,11 +13,14 @@ impl CodeProcessor {
         CodeProcessor { acc: 0, pc: 0 }
     }
 
-    pub fn execute(&mut self, code: Vec<CodeLine>) {
+    pub fn execute(&mut self, code: Vec<CodeLine>, debug: bool) {
         let mut visited_set: HashSet<u32> = HashSet::new();
 
         loop {
             let current_line = &code[self.pc as usize];
+            if debug {
+                println!("{}", current_line);
+            }
 
             if (self.pc as usize) > (code.len() - 1) {
                 println!("{}", self);
