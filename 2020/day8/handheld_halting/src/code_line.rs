@@ -1,3 +1,4 @@
+use core::panic;
 use std::fmt;
 use std::str::FromStr;
 
@@ -43,7 +44,9 @@ impl FromStr for CodeLine {
             "nop" => Instructions::NOP,
             "acc" => Instructions::ACC,
             "jmp" => Instructions::JMP,
-            "" | &_ => Instructions::UNRECOGNIZED,
+            "" | &_ => {
+                panic!("Unrecognized instruction found!{}", parts[0])
+            }
         };
 
         Ok(CodeLine {

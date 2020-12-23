@@ -45,12 +45,6 @@ impl CodeProcessor {
                     Instructions::NOP => {
                         self.pc += 1;
                     }
-                    Instructions::UNRECOGNIZED => {
-                        panic!(
-                            "An unrecognized instruction was encountered\nState {}\n{:?}",
-                            self, current_line
-                        );
-                    }
                 }
             }
         }
