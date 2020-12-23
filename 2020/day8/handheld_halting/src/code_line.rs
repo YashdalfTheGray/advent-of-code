@@ -15,6 +15,18 @@ pub enum Instructions {
     UNRECOGNIZED,
 }
 
+impl fmt::Display for Instructions {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let output = match self {
+            Instructions::ACC => "acc",
+            Instructions::NOP => "nop",
+            Instructions::JMP => "jmp",
+            Instructions::UNRECOGNIZED => "<!unrecognized!>",
+        };
+        write!(f, "{}", output)
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct CodeParseError {
     failed_string: String,
@@ -56,5 +68,11 @@ impl FromStr for CodeLine {
             instruction,
             offset: parts[1].parse::<i32>().unwrap(),
         })
+    }
+}
+
+impl fmt::Display for CodeLine {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{} {}", self.instruction, self.offset)
     }
 }
