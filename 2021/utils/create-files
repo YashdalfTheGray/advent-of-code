@@ -21,7 +21,9 @@ const solutionFileContents = `
 // https://adventofcode.com/2021/day/${day}${part === 2 ? '#part2' : ''}
 // input: day${day}/input.txt
 
-const d${day}p${part}Input = (await Deno.readTextFile('day${day}/input.txt')).split('\\n');
+const d${day}p${part}Input = (await Deno.readTextFile('day${day}/input.txt'))
+  .split('\\n')
+  .filter((l) => !!l);
 console.log(d${day}p${part}Input);`;
 
 // create a directory for the day
