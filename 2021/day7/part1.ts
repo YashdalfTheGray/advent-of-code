@@ -3,23 +3,7 @@
 // https://adventofcode.com/2021/day/7
 // input: day7/input.txt
 
-const calculateTotalFuel = (
-  crabs: number[],
-  toPosition: number,
-  fuelCostFunction: (n: number) => number
-) =>
-  crabs.reduce(
-    (groupFuel, crab) =>
-      groupFuel + fuelCostFunction(Math.abs(toPosition - crab)),
-    0
-  );
-
-const median = (numbers: number[]): number => {
-  const middle = Math.floor(numbers.length / 2);
-  return numbers.length % 2 !== 0
-    ? numbers[middle]
-    : (numbers[middle - 1] + numbers[middle]) / 2;
-};
+import { calculateTotalFuel, median } from './mathHelper.ts';
 
 const d7p1Input = (await Deno.readTextFile('day7/input.txt'))
   .split(',')
