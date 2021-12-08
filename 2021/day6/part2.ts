@@ -6,7 +6,15 @@
 class LanternfishSchoolByCounting {
   private fishies: number[];
 
-  constructor(initialFishies: number[]) {}
+  constructor(initialFishies: number[]) {
+    this.fishies = initialFishies.reduce(
+      (skewl, f) => {
+        skewl[f] = skewl[f] ? skewl[f] + 1 : 1;
+        return skewl;
+      },
+      [0, 0, 0, 0, 0, 0, 0, 0, 0]
+    );
+  }
 
   public simulate(days: number) {
     while (days > 0) {
@@ -15,14 +23,18 @@ class LanternfishSchoolByCounting {
     }
   }
 
-  public simulateOneDay() {}
+  public simulateOneDay() {
+    const newFishies = this.fishies.shift()!;
+    this.fishies.push(newFishies);
+    this.fishies[6] += newFishies;
+  }
 
   public getCurrentState() {
     return this.fishies;
   }
 
   public get size() {
-    return Object.values(this.fishies).reduce((a, b) => a + b, 0);
+    return this.fishies.reduce((a, b) => a + b, 0);
   }
 }
 
@@ -32,6 +44,7 @@ const d6p2Input = (await Deno.readTextFile('day6/input.txt'))
   .map((l) => parseInt(l, 10));
 
 const school = new LanternfishSchoolByCounting(d6p2Input);
+
 const daysToSimulate = 256;
 school.simulate(daysToSimulate);
 
