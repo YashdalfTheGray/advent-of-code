@@ -23,23 +23,46 @@ type SegmentToLetterMap = Partial<{
   [key in Segment]: string;
 }>;
 
+const firstSetContainsSecond = (str: string, sub: string): boolean => {
+  return sub.split('').filter((s) => !str.includes(s)).length === 0;
+};
+
+const setDifference = (s1: string, s2: string): string[] => {
+  return s1.split('').filter((e) => !s2.includes(e));
+};
+
+const dedupe = <T>(arr: T[]): T[] => [...new Set(arr)];
+
+const areSetsOrthogonal = (s1: string, s2: string): boolean => {
+  return (
+    dedupe(s1.concat(s2).split('')).length ===
+    dedupe(s1.split('')).length + dedupe(s2.split('')).length
+  );
+};
+
 class SevenSegmentExperiment {
   private rawReadings: string[] = [];
   private rawOutput: string[] = [];
-  private parsedOutput: number[] = [];
+  private parsedOutput = 0;
   private intermediateInternalState: SegmentDisplayState;
   private internalState: ReverseSegmentDisplayState;
   private workspaceContext: SegmentToLetterMap = {};
 
   constructor(entry: string) {
+    // split each line into readings and output separated by | and then
+    // individual display readings and output digits separated by space
     const [readingsStr, outputStr] = entry.split('|').map((s) => s.trim());
     this.rawReadings = readingsStr.split(' ').map((s) => s.trim());
     this.rawOutput = outputStr.split(' ').map((s) => s.trim());
 
+    // create an map of number to segment representation, we will
+    // swap the keys and values to find the output numbers
     this.intermediateInternalState = new Array(10)
       .fill(0)
       .reduce((state, _, i) => ({ ...state, [i]: '' }), {});
 
+    // this will be the reverse map of the one above once
+    // analyzeReadings is called.
     this.internalState = {};
   }
 
@@ -51,13 +74,36 @@ class SevenSegmentExperiment {
     return this.rawOutput;
   }
 
-  public parseOutput(): number[] {
+  public parseOutput(): number {
     this.analyzeReadings();
-    this.parsedOutput = this.rawOutput.map((s) => this.internalState[s]);
+
+    this.parsedOutput = parseInt(
+      this.rawOutput
+        .map((s) => {
+          // the segments could be in an order that is different than
+          // the one we found analyzing the readings so we find the
+          // right key from segment representation to number map.
+          const theRightKey = Object.keys(this.internalState).find(
+            (segmentSet) =>
+              segmentSet.split('').sort().join('') ===
+              s.split('').sort().join('')
+          )!;
+
+          return this.internalState[theRightKey];
+        })
+        .join(''),
+      10
+    );
+
     return this.parsedOutput;
   }
 
   private analyzeReadings() {
+    // Set up the analysis in passes. The first pass, we determine
+    // the easy ones, the ones with unique segment representations.
+    // Every time after that, we remove the readings that we've
+    // already found and then iterate on the remaining ones.
+
     // find the easy ones like 1, 4, 7, 8
     this.firstParsingPass();
     // 3 is two segments away from 7
@@ -101,10 +147,7 @@ class SevenSegmentExperiment {
       .forEach((reading) => {
         if (
           reading.length === 5 &&
-          this.includesSubstringUnordered(
-            reading,
-            this.intermediateInternalState[7]
-          )
+          firstSetContainsSecond(reading, this.intermediateInternalState[7])
         ) {
           this.intermediateInternalState[3] = reading;
         }
@@ -117,13 +160,10 @@ class SevenSegmentExperiment {
       .forEach((reading) => {
         if (
           reading.length === 6 &&
-          this.includesSubstringUnordered(
-            reading,
-            this.intermediateInternalState[3]
-          )
+          firstSetContainsSecond(reading, this.intermediateInternalState[3])
         ) {
           this.intermediateInternalState[9] = reading;
-          this.workspaceContext[Segment.TopLeft] = this.setDifference(
+          this.workspaceContext[Segment.TopLeft] = setDifference(
             this.intermediateInternalState[9],
             this.intermediateInternalState[3]
           )[0];
@@ -134,9 +174,9 @@ class SevenSegmentExperiment {
   private fourthParsingPass() {
     this.rawReadings
       .filter((r) => !Object.values(this.intermediateInternalState).includes(r))
-      .forEach((reading, i, arr) => {
+      .forEach((reading) => {
         if (reading.length === 5) {
-          const readingSetDifferenceFrom3 = this.setDifference(
+          const readingSetDifferenceFrom3 = setDifference(
             reading,
             this.intermediateInternalState[3]
           );
@@ -153,7 +193,7 @@ class SevenSegmentExperiment {
           // that is orthogonal to the segment set of 9
           if (
             readingSetDifferenceFrom3.length === 1 &&
-            this.setDifference(
+            areSetsOrthogonal(
               this.intermediateInternalState[9],
               readingSetDifferenceFrom3.join('')
             )
@@ -161,7 +201,7 @@ class SevenSegmentExperiment {
             this.intermediateInternalState[2] = reading;
           }
         } else if (reading.length === 6) {
-          const readingSetDifferenceFrom8 = this.setDifference(
+          const readingSetDifferenceFrom8 = setDifference(
             this.intermediateInternalState[8],
             reading
           );
@@ -170,7 +210,7 @@ class SevenSegmentExperiment {
           // that is orthogonal to the segment set of 1 if the reading
           // is displaying 0
           if (
-            this.setDifference(
+            areSetsOrthogonal(
               this.intermediateInternalState[1],
               readingSetDifferenceFrom8.join('')
             )
@@ -184,14 +224,6 @@ class SevenSegmentExperiment {
         }
       });
   }
-
-  private includesSubstringUnordered(str: string, sub: string): boolean {
-    return sub.split('').filter((s) => !str.includes(s)).length === 0;
-  }
-
-  private setDifference(s1: string, s2: string): string[] {
-    return s1.split('').filter((e) => !s2.includes(e));
-  }
 }
 
 const d8p2Input = (await Deno.readTextFile('day8/input.txt'))
@@ -199,13 +231,8 @@ const d8p2Input = (await Deno.readTextFile('day8/input.txt'))
   .filter((l) => !!l)
   .map((l) => new SevenSegmentExperiment(l));
 
-const stuff = d8p2Input[0].parseOutput();
-console.log(stuff);
-console.log(d8p2Input[0]);
-
-// const totalOfAllTheOutput = d8p2Input.reduce(
-//   (runningTotal, experiment) =>
-//     runningTotal + experiment.parseOutput().reduce((sum, o) => sum + o, 0),
-//   0
-// );
-// console.log(`The total of all parsed values is ${totalOfAllTheOutput}`);
+const totalOfAllTheOutput = d8p2Input.reduce(
+  (runningTotal, experiment) => runningTotal + experiment.parseOutput(),
+  0
+);
+console.log(`The total of all parsed values is ${totalOfAllTheOutput}`);
