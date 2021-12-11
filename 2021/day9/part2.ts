@@ -5,6 +5,8 @@
 
 type PointAndHeight = [number, number, number];
 
+const printPointAndHeight = ([x, y, h]: PointAndHeight) => `(${x},${y}):${h}`;
+
 const getAnnotatedNeighbors = (
   grid: number[][],
   x: number,
@@ -51,7 +53,7 @@ const getLowPoints = (grid: number[][]): PointAndHeight[] => {
 function getBasinsOfLowPoints(
   grid: number[][],
   lowPoint: PointAndHeight,
-  pointSet = new Set([lowPoint])
+  pointSet = new Set([printPointAndHeight(lowPoint)])
 ) {
   const pointProcessingQueue = [lowPoint];
 
@@ -60,9 +62,12 @@ function getBasinsOfLowPoints(
     const neighborPoints = getAnnotatedNeighbors(grid, x, y);
 
     neighborPoints.forEach(([nx, ny, nvalue]) => {
-      if (nvalue !== 9 && !pointSet.has([nx, ny, nvalue])) {
+      if (
+        nvalue !== 9 &&
+        !pointSet.has(printPointAndHeight([nx, ny, nvalue]))
+      ) {
         pointProcessingQueue.push([nx, ny, nvalue]);
-        pointSet.add([nx, ny, nvalue]);
+        pointSet.add(printPointAndHeight([nx, ny, nvalue]));
       }
     });
   }
