@@ -3,92 +3,7 @@
 // https://adventofcode.com/2021/day/13
 // input: day13/input.txt
 
-type Point = { x: number; y: number };
-type Fold = { foldAxis: 'x' | 'y'; foldPosition: number };
-
-class PointGrid {
-  private grid: Set<string>;
-  private height = 0;
-  private width = 0;
-
-  public static encodePoint(x: number, y: number): string {
-    return `${x},${y}`;
-  }
-
-  public static decodePoint(point: string): { x: number; y: number } {
-    const [x, y] = point.split(',');
-    return { x: parseInt(x, 10), y: parseInt(y, 10) };
-  }
-
-  constructor(input: { x: number; y: number }[]) {
-    this.grid = new Set();
-    for (const point of input) {
-      if (point.x > this.width) {
-        this.width = point.x;
-      }
-      if (point.y > this.height) {
-        this.height = point.y;
-      }
-
-      this.grid.add(PointGrid.encodePoint(point.x, point.y));
-    }
-  }
-
-  public get knownPointsSize(): number {
-    return this.grid.size;
-  }
-
-  public display(): string {
-    let output = '';
-    for (let y = 0; y <= this.height; y++) {
-      for (let x = 0; x <= this.width; x++) {
-        if (this.grid.has(PointGrid.encodePoint(x, y))) {
-          output += '#';
-        } else {
-          output += '.';
-        }
-      }
-      output += '\n';
-    }
-    return output;
-  }
-
-  public applyFold(fold: Fold) {
-    if (fold.foldAxis === 'x') {
-      this.applyFoldX(fold.foldPosition);
-    } else {
-      this.applyFoldY(fold.foldPosition);
-    }
-  }
-
-  private applyFoldX(foldPosition: number) {
-    this.grid.forEach((point) => {
-      const { x, y } = PointGrid.decodePoint(point);
-
-      if (x > foldPosition) {
-        const newX = foldPosition - (x - foldPosition);
-        this.grid.add(PointGrid.encodePoint(newX, y));
-        this.grid.delete(point);
-      }
-    });
-
-    this.width = foldPosition;
-  }
-
-  private applyFoldY(foldPosition: number) {
-    this.grid.forEach((point) => {
-      const { x, y } = PointGrid.decodePoint(point);
-
-      if (y > foldPosition) {
-        const newY = foldPosition - (y - foldPosition);
-        this.grid.add(PointGrid.encodePoint(x, newY));
-        this.grid.delete(point);
-      }
-    });
-
-    this.height = foldPosition;
-  }
-}
+import { PointGrid, Fold } from './PointGrid.ts';
 
 const [d13p1Dots, d13p1Folds] = (await Deno.readTextFile('day13/input.txt'))
   .split('\n\n')
@@ -115,6 +30,7 @@ const parsedFolds = d13p1Folds
   });
 
 parsedDots.applyFold(parsedFolds[0] as Fold);
+console.log('\n');
 console.log(
   `${parsedDots.knownPointsSize} points are visible after the first fold.`
 );
