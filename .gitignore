@@ -1,8 +1,7 @@
 ### Project specific ###
 **/*.dot
 **/*.png
-2021/test.ts
-2021/test.js
+2021/test*
 
 # File created using '.gitignore Generator' for Visual Studio Code: https://bit.ly/vscode-gig
 
