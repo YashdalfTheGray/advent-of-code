@@ -3,27 +3,7 @@
 // https://adventofcode.com/2021/day/14
 // input: day14/input.txt
 
-const getPairsFrom = (state: string) => {
-  const pairs = [];
-  const splitState = state.split('');
-
-  while (splitState.length > 1) {
-    const pairStart = splitState.shift()!;
-    const pairEnd = splitState[0];
-    pairs.push(pairStart + pairEnd);
-  }
-
-  return pairs;
-};
-
-const checkAndInsertElement = (
-  pair: string,
-  insertionMap: Map<string, string>
-) => {
-  const [start, end] = pair.split('');
-  const insertion = insertionMap.get(pair);
-  return start + (insertion ?? '') + end;
-};
+import { getPairsFrom, checkAndInsertElement } from './utils.ts';
 
 const applyPairInsertionRules = (
   start: string,
