@@ -21,14 +21,60 @@ const getSquareOfPixels = <T>(
     grid[posy + 1]?.[posx + 1],
   ].map((v) => (v !== undefined ? v : defaultValue));
 
-const defaultValue = '.';
+const PixelsToNumber = (pixels: string[]) =>
+  parseInt(pixels.map((p) => (p === '#' ? 1 : 0)).join(''), 2);
+
+const addBorder = (image: string[][], border: string) => [
+  Array(image[0].length + 2).fill(border),
+  ...image.map((r) => [border, ...r, border]),
+  Array(image[0].length + 2).fill(border),
+];
+
+const determineNewDefaultValue = (
+  imageProcessingMap: string[],
+  previousDefaultValue: string
+): string => {
+  if (
+    imageProcessingMap[0] === '#' &&
+    imageProcessingMap[imageProcessingMap.length - 1] === '.'
+  ) {
+    return previousDefaultValue === '#' ? '.' : '#';
+  } else {
+    return '.';
+  }
+};
+
+const printImage = (image: string[][]) =>
+  image.map((r) => r.join('')).join('\n');
 
 const d20p1Input = (await Deno.readTextFile('day20/input.txt')).split('\n\n');
 
-const imageProcessingMap = d20p1Input[0].split('');
+const imageProcessingMap = d20p1Input[0].trim().split('');
 const image = d20p1Input[1]
   .split('\n')
   .filter(Boolean)
   .map((l) => l.split(''));
 
-console.log(getSquareOfPixels(image, 1, 1, defaultValue));
+const algorithmPasses = 2;
+
+let currentImage = image;
+let defaultValue = '.';
+
+for (let i = 0; i < algorithmPasses; i++) {
+  currentImage = addBorder(currentImage, defaultValue);
+  currentImage = currentImage.map((row, y) => {
+    return row.map((_, x) => {
+      const pixels = getSquareOfPixels(currentImage, x, y, defaultValue);
+      const imageProcessingMapIndex = PixelsToNumber(pixels);
+      return imageProcessingMap[imageProcessingMapIndex];
+    });
+  });
+  defaultValue = determineNewDefaultValue(imageProcessingMap, defaultValue);
+}
+
+const litPixels = currentImage.flat().filter((p) => p === '#').length;
+
+console.log('\n');
+console.log(
+  `There are ${litPixels} lit pixels in the image after ${algorithmPasses} passes.`
+);
