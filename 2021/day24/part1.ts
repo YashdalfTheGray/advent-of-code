@@ -3,6 +3,10 @@
 // https://adventofcode.com/2021/day/24
 // input: day24/input.txt
 
+import { assert } from 'https://deno.land/std@0.118.0/testing/asserts.ts';
+
+type Registers = { [key: string]: number[] };
+
 class Instruction {
   public opcode: string;
   public args: [string, (string | number)?];
@@ -14,6 +18,68 @@ class Instruction {
     if (args[1]) {
       const numericArg = parseInt(args[1], 10);
       this.args[1] = isNaN(numericArg) ? args[1] : numericArg;
+    }
+  }
+}
+
+class ALU {
+  private registers: Registers = {
+    w: [] as number[],
+    x: [] as number[],
+    y: [] as number[],
+    z: [] as number[],
+  };
+
+  public process(ins: Instruction) {
+    const [register, valueOrRegister] = ins.args;
+    assert(['w', 'x', 'y', 'z'].includes(register), 'Invalid register');
+
+    switch (ins.opcode) {
+      case 'inp':
+        this.registers[register] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+        break;
+      case 'add':
+        this.registers[register].forEach((v, i) => {
+          v +=
+            typeof valueOrRegister === 'string'
+              ? this.registers[valueOrRegister][i]
+              : valueOrRegister!;
+        });
+        break;
+      case 'mul':
+        this.registers[register].forEach((v, i) => {
+          v *=
+            typeof valueOrRegister === 'string'
+              ? this.registers[valueOrRegister][i]
+              : valueOrRegister!;
+        });
+        break;
+      case 'div':
+        this.registers[register].forEach((v, i) => {
+          v = Math.floor(
+            v /
+              (typeof valueOrRegister === 'string'
+                ? this.registers[valueOrRegister][i]
+                : valueOrRegister!)
+          );
+        });
+        break;
+      case 'mod':
+        this.registers[register].forEach((v, i) => {
+          v =
+            v %
+            (typeof valueOrRegister === 'string'
+              ? this.registers[valueOrRegister][i]
+              : valueOrRegister!);
+        });
+        break;
+      case 'eql':
+        this.registers[register].forEach((v, i) => {
+          v = v === this.registers[valueOrRegister!][i] ? 1 : 0;
+        });
+        break;
+      default:
+        throw new Error(`Unknown opcode: ${ins.opcode}`);
     }
   }
 }
