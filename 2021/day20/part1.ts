@@ -3,49 +3,12 @@
 // https://adventofcode.com/2021/day/20
 // input: day20/input.txt
 
-const getSquareOfPixels = <T>(
-  grid: T[][],
-  posx: number,
-  posy: number,
-  defaultValue: T
-): T[] =>
-  [
-    grid[posy - 1]?.[posx - 1],
-    grid[posy - 1]?.[posx],
-    grid[posy - 1]?.[posx + 1],
-    grid[posy]?.[posx - 1],
-    grid[posy]?.[posx],
-    grid[posy]?.[posx + 1],
-    grid[posy + 1]?.[posx - 1],
-    grid[posy + 1]?.[posx],
-    grid[posy + 1]?.[posx + 1],
-  ].map((v) => (v !== undefined ? v : defaultValue));
-
-const PixelsToNumber = (pixels: string[]) =>
-  parseInt(pixels.map((p) => (p === '#' ? 1 : 0)).join(''), 2);
-
-const addBorder = (image: string[][], border: string) => [
-  Array(image[0].length + 2).fill(border),
-  ...image.map((r) => [border, ...r, border]),
-  Array(image[0].length + 2).fill(border),
-];
-
-const determineNewDefaultValue = (
-  imageProcessingMap: string[],
-  previousDefaultValue: string
-): string => {
-  if (
-    imageProcessingMap[0] === '#' &&
-    imageProcessingMap[imageProcessingMap.length - 1] === '.'
-  ) {
-    return previousDefaultValue === '#' ? '.' : '#';
-  } else {
-    return '.';
-  }
-};
-
-const printImage = (image: string[][]) =>
-  image.map((r) => r.join('')).join('\n');
+import {
+  addBorder,
+  getSquareOfPixels,
+  pixelsToNumber,
+  determineNewDefaultValue,
+} from './pixelUtils.ts';
 
 const d20p1Input = (await Deno.readTextFile('day20/input.txt')).split('\n\n');
 
@@ -65,7 +28,7 @@ for (let i = 0; i < algorithmPasses; i++) {
   currentImage = currentImage.map((row, y) => {
     return row.map((_, x) => {
       const pixels = getSquareOfPixels(currentImage, x, y, defaultValue);
-      const imageProcessingMapIndex = PixelsToNumber(pixels);
+      const imageProcessingMapIndex = pixelsToNumber(pixels);
       return imageProcessingMap[imageProcessingMapIndex];
     });
   });
