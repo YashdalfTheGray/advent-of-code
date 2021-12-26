@@ -3,8 +3,9 @@
 // https://adventofcode.com/2021/day/14#part2
 // input: day14/input.txt
 
-import { getPairsFrom, checkAndInsertElement } from './utils.ts';
+import { getPairsFrom } from './utils.ts';
 
+// turns "AB" to ["AC", "CB"] given map that maps "AB" to "C"
 const generateNewPairs = (
   initialPair: string,
   insertionMap: Map<string, string>
@@ -14,14 +15,17 @@ const generateNewPairs = (
   return [start + insertion, insertion + end];
 };
 
+// Does the splitting of the input
 const [d14p2StartingChain, d14p2PairInsertions] = (
   await Deno.readTextFile('day14/input.txt')
 )
   .split('\n\n')
   .filter((l) => !!l);
+
 const startingChain = d14p2StartingChain.trim();
 const pairInsertionMap = new Map<string, string>();
 
+// build the map of insertions
 d14p2PairInsertions
   .split('\n')
   .filter((l) => !!l)
@@ -30,10 +34,53 @@ d14p2PairInsertions
     pairInsertionMap.set(pair, insertion);
   });
 
-const polymerMap = new Map<string, number>();
-getPairsFrom(startingChain).forEach((p) => {
-  if (!polymerMap.has(p)) {
-    polymerMap.set(p, 0);
+// build a stats hash and set up how many steps
+const stats = startingChain.split('').reduce((stats, e) => {
+  if (!stats[e]) {
+    stats[e] = 0;
   }
-  polymerMap.set(p, polymerMap.get(p)! + 1);
-});
+  stats[e] += 1;
+
+  return stats;
+}, {} as { [key: string]: number });
+const steps = 40;
+
+// build a map of polymers
+let currentMap = getPairsFrom(startingChain).reduce((map, p) => {
+  if (!map.has(p)) {
+    map.set(p, 0);
+  }
+  map.set(p, map.get(p)! + 1);
+  return map;
+}, new Map<string, number>());
+
+// Then do the following steps, assuming that K is the key
+// in the currentMap and V is the corresponding value
+//   1. for each K, find the new new pairs that it spawns
+//   2. add the new element to the stats hash V times
+//   3. add each new pair to the newMap V times
+for (let i = 0; i < steps; i++) {
+  const newMap = new Map<string, number>();
+
+  currentMap.forEach((v, k) => {
+    const newPairs = generateNewPairs(k, pairInsertionMap);
+    const insertion = pairInsertionMap.get(k)!;
+
+    stats[insertion] = (stats[insertion] ?? 0) + v;
+
+    newPairs.forEach((p) => {
+      newMap.set(p, (newMap.get(p) ?? 0) + v);
+    });
+  });
+
+  currentMap = newMap;
+}
+
+const sortedStats = Object.entries(stats).sort((a, b) => b[1] - a[1]);
+
+console.log('\n');
+console.log(
+  `The difference of the most common element and the least common element is ${
+    sortedStats[0][1] - sortedStats[sortedStats.length - 1][1]
+  }.`
+);
