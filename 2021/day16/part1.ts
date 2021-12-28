@@ -5,6 +5,7 @@
 
 const testInput1 = `D2FE28`;
 const testInput2 = `38006F45291200`;
+const testInput3 = `EE00D40C823060`;
 
 class Packet {
   #version: number;
@@ -23,6 +24,7 @@ class Packet {
         this.parseLiteral(input.substr(6));
         break;
       default:
+        this.parseOperation(input.substr(6));
     }
   }
 
@@ -47,7 +49,7 @@ class Packet {
     }`;
   }
 
-  private parseLiteral(input: string): void {
+  private parseLiteral(input: string) {
     const groups = this.splitStringIntoGroups(input);
 
     let result = '';
@@ -65,6 +67,17 @@ class Packet {
     this.#result = parseInt(result, 2);
   }
 
+  private parseOperation(input: string) {
+    const lengthType = parseInt(input.substr(0, 1), 2);
+    if (lengthType === 0) {
+      const totalSubPacketLength = parseInt(input.substr(1, 15), 2);
+      console.log(totalSubPacketLength, input.substr(16));
+    } else if (lengthType === 1) {
+      const totalPackets = parseInt(input.substr(1, 11), 2);
+      console.log(totalPackets, input.substr(12));
+    }
+  }
+
   private splitStringIntoGroups(input: string, groupSize = 5): string[] {
     return input.match(new RegExp(`.{1,${groupSize}}`, 'g'))!;
   }
@@ -73,12 +86,15 @@ class Packet {
 const d16p1Input = [
   testInput1,
   testInput2,
+  testInput3,
   // await Deno.readTextFile('day16/input.txt'),
-].map((i) =>
-  i
-    .split('')
-    .map((h) => parseInt(h, 16).toString(2).padStart(4, '0'))
-    .join('')
-);
+]
+  .map((i) =>
+    i
+      .split('')
+      .map((h) => parseInt(h, 16).toString(2).padStart(4, '0'))
+      .join('')
+  )
+  .map((i) => new Packet(i));
 
-console.log(new Packet(d16p1Input[0]).toString());
+d16p1Input.forEach((p) => console.log(p.toString()));
