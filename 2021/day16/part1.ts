@@ -3,98 +3,127 @@
 // https://adventofcode.com/2021/day/16
 // input: day16/input.txt
 
-const testInput1 = `D2FE28`;
-const testInput2 = `38006F45291200`;
-const testInput3 = `EE00D40C823060`;
+class RawNumericBuffer {
+  private readHead = 0;
 
-class Packet {
-  #version: number;
-  #type: number;
-  #result = 0;
-  #subPackets = new Array<Packet>();
+  constructor(private data: string) {}
 
-  constructor(input: string) {
-    // the first three bits are the version
-    this.#version = parseInt(input.substr(0, 3), 2);
-    // the next three bits are the type
-    this.#type = parseInt(input.substr(3, 3), 2);
-
-    switch (this.#type) {
-      case 4:
-        this.parseLiteral(input.substr(6));
-        break;
-      default:
-        this.parseOperation(input.substr(6));
-    }
+  public get size(): number {
+    return this.data.length;
   }
 
-  public get version() {
-    return this.#version;
+  public get unreadSize(): number {
+    return this.size - this.readHead;
   }
 
-  public get type() {
-    return this.#type;
+  public isAllZeros(): boolean {
+    return this.data
+      .substr(this.readHead)
+      .split('')
+      .every((c) => c === '0');
   }
 
-  public get result() {
-    return this.#result;
+  public isEmpty(): boolean {
+    return this.readHead === this.size - 1;
   }
 
-  public toString(): string {
-    return `ver ${this.#version} type ${this.#type}, result ${this.#result}${
-      this.#subPackets.length !== 0
-        ? '\nSubpackets:\n' +
-          this.#subPackets.map((p) => `  - ${p.toString()}`).join('\n')
-        : ''
-    }`;
-  }
-
-  private parseLiteral(input: string) {
-    const groups = this.splitStringIntoGroups(input);
-
-    let result = '';
-
-    for (const g of groups) {
-      if (g.length === 5) {
-        result += g.substr(1);
-      }
-
-      if (g.substr(0, 1) === '0') {
-        break;
-      }
+  public read(length: number): string;
+  public read(length: number, radix: number): number;
+  public read(length: number, radix?: number): string | number {
+    if (this.data.length === 0) {
+      throw new Error('Cannot read from empty buffer');
     }
 
-    this.#result = parseInt(result, 2);
+    const readStr =
+      this.size < length || this.unreadSize < length
+        ? this.data.substr(this.readHead)
+        : this.data.substr(this.readHead, length);
+    this.readHead += length;
+
+    return radix ? parseInt(readStr, radix) : readStr;
   }
 
-  private parseOperation(input: string) {
-    const lengthType = parseInt(input.substr(0, 1), 2);
-    if (lengthType === 0) {
-      const totalSubPacketLength = parseInt(input.substr(1, 15), 2);
-      console.log(totalSubPacketLength, input.substr(16));
-    } else if (lengthType === 1) {
-      const totalPackets = parseInt(input.substr(1, 11), 2);
-      console.log(totalPackets, input.substr(12));
-    }
-  }
-
-  private splitStringIntoGroups(input: string, groupSize = 5): string[] {
-    return input.match(new RegExp(`.{1,${groupSize}}`, 'g'))!;
+  public flush(): string {
+    const flushed = this.data.substr(this.readHead);
+    this.readHead = this.size - 1;
+    return flushed;
   }
 }
 
-const d16p1Input = [
-  testInput1,
-  testInput2,
-  testInput3,
-  // await Deno.readTextFile('day16/input.txt'),
-]
-  .map((i) =>
-    i
-      .split('')
-      .map((h) => parseInt(h, 16).toString(2).padStart(4, '0'))
-      .join('')
-  )
-  .map((i) => new Packet(i));
+class PacketData {
+  constructor(
+    public version: number,
+    public type: number,
+    public result = 0,
+    public subPackets: PacketData[] = []
+  ) {}
 
-d16p1Input.forEach((p) => console.log(p.toString()));
+  public versionSum(): number {
+    return this.subPackets.reduce(
+      (sum, p) => sum + p.versionSum(),
+      this.version
+    );
+  }
+}
+
+const parsePackets = (buffer: RawNumericBuffer): PacketData => {
+  const rootPacket = new PacketData(buffer.read(3, 2), buffer.read(3, 2));
+
+  if (rootPacket.type === 4) {
+    let result = '';
+
+    while (true) {
+      const currentGroup = buffer.read(5);
+      result += currentGroup.substr(1);
+
+      if (currentGroup.substr(0, 1) === '0') {
+        break;
+      }
+    }
+
+    rootPacket.result = parseInt(result, 2);
+  } else {
+    const lengthType = buffer.read(1, 2);
+
+    if (lengthType === 0) {
+      let totalSubPacketLength = buffer.read(15, 2);
+      let startingPosition = buffer.unreadSize;
+
+      while (totalSubPacketLength > 0) {
+        rootPacket.subPackets.push(parsePackets(buffer));
+        totalSubPacketLength -= startingPosition - buffer.unreadSize;
+        startingPosition = buffer.unreadSize;
+      }
+    } else if (lengthType === 1) {
+      const totalPackets = buffer.read(11, 2);
+
+      for (let i = 0; i < totalPackets; i++) {
+        rootPacket.subPackets.push(parsePackets(buffer));
+      }
+    }
+  }
+
+  return rootPacket;
+};
+
+const d16p1Input = [
+  'D2FE28',
+  '38006F45291200',
+  'EE00D40C823060',
+  '8A004A801A8002F478',
+  '620080001611562C8802118E34',
+  'C0015000016115A2E0802F182340',
+  'A0016C880162017C3686B18A3D4780',
+  await Deno.readTextFile('day16/input.txt'),
+].map((i) =>
+  i
+    .split('')
+    .map((h) => parseInt(h, 16).toString(2).padStart(4, '0'))
+    .join('')
+);
+
+const parsedPackets = d16p1Input
+  .map((i) => new RawNumericBuffer(i))
+  .map((b) => parsePackets(b));
+
+console.dir(parsedPackets.map((p) => p.versionSum()));
