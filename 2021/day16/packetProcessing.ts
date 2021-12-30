@@ -1,3 +1,5 @@
+import { assert } from 'https://deno.land/std/testing/asserts.ts';
+
 export class RawNumericBuffer {
   private readHead = 0;
 
@@ -58,6 +60,51 @@ export class PacketData {
       (sum, p) => sum + p.versionSum(),
       this.version
     );
+  }
+
+  public resolve(): number {
+    switch (this.type) {
+      case 0:
+        return this.subPackets.map((p) => p.resolve()).reduce((a, b) => a + b);
+      case 1:
+        return this.subPackets.map((p) => p.resolve()).reduce((a, b) => a * b);
+      case 2:
+        return Math.min(...this.subPackets.map((p) => p.resolve()));
+      case 3:
+        return Math.max(...this.subPackets.map((p) => p.resolve()));
+      case 4:
+        assert(
+          this.subPackets.length === 0,
+          'Literal packets cannot contain subpackets'
+        );
+        return this.result;
+      case 5:
+        assert(
+          this.subPackets.length === 2,
+          'Greater than operation can only work on 2 subpackets'
+        );
+        return this.subPackets[0].resolve() > this.subPackets[1].resolve()
+          ? 1
+          : 0;
+      case 6:
+        assert(
+          this.subPackets.length === 2,
+          'Less than operation can only work on 2 subpackets'
+        );
+        return this.subPackets[0].resolve() < this.subPackets[1].resolve()
+          ? 1
+          : 0;
+      case 7:
+        assert(
+          this.subPackets.length === 2,
+          'Equal to operation can only work on 2 subpackets'
+        );
+        return this.subPackets[0].resolve() === this.subPackets[1].resolve()
+          ? 1
+          : 0;
+      default:
+        throw new Error(`Unknown packet type ${this.type}`);
+    }
   }
 }
 
