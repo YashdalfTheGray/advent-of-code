@@ -5,14 +5,19 @@
 
 import { RawNumericBuffer, parsePackets } from './packetProcessing.ts';
 
+// A fun way to visualize and create more test cases here
+// https://davidyue.live/aoc/app/packetcode.html
+
 const d16p2Input = [
   'D2FE28',
-  '38006F45291200',
-  'EE00D40C823060',
-  '8A004A801A8002F478',
-  '620080001611562C8802118E34',
-  'C0015000016115A2E0802F182340',
-  'A0016C880162017C3686B18A3D4780',
+  'C200B40A82',
+  '04005AC33890',
+  '880086C3E88112',
+  'CE00C43D881120',
+  'D8005AC2A8F0',
+  'F600BC2D8F',
+  '9C005AC2F8F0',
+  '9C0141080250320F1802104A08',
   await Deno.readTextFile('day16/input.txt'),
 ].map((i) =>
   i
@@ -25,4 +30,4 @@ const parsedPackets = d16p2Input
   .map((i) => new RawNumericBuffer(i))
   .map((b) => parsePackets(b));
 
-console.dir(parsedPackets.map((p) => p.versionSum()));
+console.log(parsedPackets.map((p) => p.resolve()));
