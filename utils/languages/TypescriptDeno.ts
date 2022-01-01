@@ -16,8 +16,8 @@ export default class TypescriptDeno implements Language {
     return `./${this.year}/day${this.day}`;
   }
 
-  public getSetupCommands(): string[] {
-    return [`mkdir -p ${this.getSolutionRootPath()}`];
+  public getSetupCommand(): string[] {
+    return ['mkdir', '-p', this.getSolutionRootPath()];
   }
 
   public getFileNames() {
