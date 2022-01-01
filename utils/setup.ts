@@ -31,6 +31,16 @@ if (!SelectedLanguage) {
 }
 
 const selected = new SelectedLanguage(year, day);
-const subprocess = Deno.run({ cmd: selected.getSetupCommand() });
 
+// run the setup commands
+const subprocess = Deno.run({ cmd: selected.getSetupCommand() });
 await subprocess.status();
+
+// make sure that the directory and an input file exists
+const { inputFile, solutionFile } = selected.getFileNames();
+await ensureDir(selected.getSolutionRootPath());
+await ensureFile(inputFile);
+
+// edit or write out the solutions file
+const content = selected.getFileContents(solutionFile);
+await Deno.writeFile(solutionFile, new TextEncoder().encode(content));
