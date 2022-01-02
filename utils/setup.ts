@@ -4,13 +4,21 @@ import { parse } from 'https://deno.land/std/flags/mod.ts';
 import { ensureDir, ensureFile } from 'https://deno.land/std/fs/mod.ts';
 
 import allLanguages from './languages/index.ts';
+import { getManifestLocation, addDayToManifest } from './manifest.ts';
 
-const { year, day, forceLanguage } = parse(Deno.args, {
+const { yearStr, dayStr, forceLanguage } = parse(Deno.args, {
   string: ['year', 'day', 'part', 'forceLanguage'],
-  alias: { forceLanguage: 'force-language' },
+  alias: {
+    yearStr: ['year', 'y'],
+    dayStr: ['day', 'd'],
+    forceLanguage: ['force-language', 'f'],
+  },
 });
 
-if (!year || !day) {
+const year = Number(yearStr);
+const day = Number(dayStr);
+
+if (!year || !day || isNaN(year) || isNaN(day)) {
   throw new Error('The --year and --day arguments are required.');
 }
 
@@ -30,6 +38,10 @@ if (!SelectedLanguage) {
   );
 }
 
+// build out the year folder and create a manifest.json file
+await ensureDir(`./${year}`);
+await ensureFile(getManifestLocation(year));
+
 const selected = new SelectedLanguage(year, day);
 
 // run the setup commands
@@ -43,13 +55,32 @@ await ensureFile(inputFile);
 
 // edit or write out the solutions file
 const content = selected.getFileContents(solutionFile);
-await Deno.writeFile(solutionFile, new TextEncoder().encode(content));
+await Deno.writeTextFile(solutionFile, content);
 
 // write out any other files that we may require
 Object.values(others).forEach(async (file) => {
   await ensureFile(file);
-  Deno.writeFile(
-    file,
-    new TextEncoder().encode(selected.getFileContents(file))
-  );
+  await Deno.writeTextFile(file, selected.getFileContents(file));
 });
+
+// read and append to the manifest file
+const manifestStr = await Deno.readTextFile('./2022/manifest.json');
+const manifest = (() => {
+  try {
+    return JSON.parse(manifestStr);
+  } catch (_) {
+    return {};
+  }
+})();
+console.log(manifest);
+
+const updatedManifest = addDayToManifest(
+  day,
+  SelectedLanguage.language[0],
+  manifest
+);
+
+await Deno.writeTextFile(
+  getManifestLocation(year),
+  JSON.stringify(updatedManifest, null, 2)
+);
