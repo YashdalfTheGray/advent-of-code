@@ -41,7 +41,7 @@ export default class JavascriptNode implements Language {
 // https://adventofcode.com/${this.year}/day/${this.day}
 // input: day${this.day}/input.txt
 
-const d${this.day}Input = (await Deno.readTextFile('day${this.day}/input.txt'))
+const day${this.day}Input = (await Deno.readTextFile('day${this.day}/input.txt'))
   .split('\\n')
   .filter((l) => !!l);
 
