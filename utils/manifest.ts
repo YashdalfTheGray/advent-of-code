@@ -9,7 +9,7 @@ export function addDayToManifest(
 ) {
   if (!currentManifest[language]) {
     currentManifest[language] = [day];
-  } else {
+  } else if (!currentManifest[language].includes(day)) {
     currentManifest[language].push(day);
   }
 
