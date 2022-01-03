@@ -72,7 +72,6 @@ const manifest = (() => {
     return {};
   }
 })();
-console.log(manifest);
 
 const updatedManifest = addDayToManifest(
   day,
