@@ -7,11 +7,11 @@ export default class JavascriptNode implements Language {
   private solutionFilePath: string;
 
   constructor(private year: number, private day: number) {
-    this.solutionFilePath = `./${this.year}/day${this.day}/solution.${this.extension}`;
+    this.solutionFilePath = `${this.year}/day${this.day}/solution.${this.extension}`;
   }
 
   public getSolutionRootPath(): string {
-    return `./${this.year}/day${this.day}`;
+    return `${this.year}/day${this.day}`;
   }
   public getSetupCommand(): string[] {
     return ['mkdir', '-p', this.getSolutionRootPath()];
@@ -22,7 +22,7 @@ export default class JavascriptNode implements Language {
     solutionFile: string;
   } {
     return {
-      inputFile: `./${this.year}/day${this.day}/input.txt`,
+      inputFile: `${this.year}/day${this.day}/input.txt`,
       solutionFile: this.solutionFilePath,
     };
   }
@@ -41,7 +41,7 @@ export default class JavascriptNode implements Language {
 // https://adventofcode.com/${this.year}/day/${this.day}
 // input: day${this.day}/input.txt
 
-const day${this.day}Input = (await Deno.readTextFile('day${this.day}/input.txt'))
+const day${this.day}Input = (await Deno.readTextFile('input.txt'))
   .split('\\n')
   .filter((l) => !!l);
 

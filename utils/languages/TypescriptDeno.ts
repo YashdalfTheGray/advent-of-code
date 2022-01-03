@@ -8,12 +8,12 @@ export default class TypescriptDeno implements Language {
   private vscodeConfigFilePath: string;
 
   constructor(private year: number, private day: number) {
-    this.solutionFilePath = `./${this.year}/day${this.day}/solution.${this.extension}`;
-    this.vscodeConfigFilePath = `./${this.year}/day${this.day}/.vscode/settings.json`;
+    this.solutionFilePath = `${this.year}/day${this.day}/solution.${this.extension}`;
+    this.vscodeConfigFilePath = `${this.year}/day${this.day}/.vscode/settings.json`;
   }
 
   public getSolutionRootPath(): string {
-    return `./${this.year}/day${this.day}`;
+    return `${this.year}/day${this.day}`;
   }
 
   public getSetupCommand(): string[] {
@@ -22,7 +22,7 @@ export default class TypescriptDeno implements Language {
 
   public getFileNames() {
     return {
-      inputFile: `./${this.year}/day${this.day}/input.txt`,
+      inputFile: `${this.year}/day${this.day}/input.txt`,
       solutionFile: this.solutionFilePath,
       vscodeConfigFile: this.vscodeConfigFilePath,
     };
@@ -54,7 +54,7 @@ export default class TypescriptDeno implements Language {
 // https://adventofcode.com/${this.year}/day/${this.day}
 // input: day${this.day}/input.txt
 
-const day${this.day}Input = (await Deno.readTextFile('day${this.day}/input.txt'))
+const day${this.day}Input = (await Deno.readTextFile('input.txt'))
   .split('\\n')
   .filter((l) => !!l);
 
