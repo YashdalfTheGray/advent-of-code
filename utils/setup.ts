@@ -45,8 +45,15 @@ await ensureFile(getManifestLocation(year));
 const selected = new SelectedLanguage(year, day);
 
 // run the setup commands
-const subprocess = Deno.run({ cmd: selected.getSetupCommand() });
-await subprocess.status();
+await Promise.all(
+  selected
+    .getSetupCommand()
+    .join(' ')
+    .split('&&')
+    .map((c) => c.trim().split(' '))
+    .map((cmd) => Deno.run({ cmd }))
+    .map((p) => p.status())
+);
 
 // make sure that the directory and an input file exists
 const { inputFile, solutionFile, ...others } = selected.getFileNames();
