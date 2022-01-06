@@ -13,9 +13,15 @@ export default class Ruby implements Language {
   public getSolutionRootPath(): string {
     return `${this.year}/day${this.day}`;
   }
+
   public getSetupCommand(): string[] {
     return ['mkdir', '-p', this.getSolutionRootPath()];
   }
+
+  public getPostInstallCommand(): string[] {
+    return [];
+  }
+
   public getFileNames(): {
     [key: string]: string;
     inputFile: string;
@@ -26,6 +32,7 @@ export default class Ruby implements Language {
       solutionFile: this.solutionFilePath,
     };
   }
+
   public getFileContents(path: string): string {
     if (path === this.solutionFilePath) {
       return this.getSolutionFileContents();

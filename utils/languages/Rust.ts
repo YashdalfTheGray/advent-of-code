@@ -13,6 +13,7 @@ export default class Rust implements Language {
   public getSolutionRootPath(): string {
     return `${this.year}/day${this.day}`;
   }
+
   public getSetupCommand(): string[] {
     return [
       'mkdir',
@@ -26,6 +27,11 @@ export default class Rust implements Language {
       this.getSolutionRootPath(),
     ];
   }
+
+  public getPostInstallCommand(): string[] {
+    return [];
+  }
+
   public getFileNames(): {
     [key: string]: string;
     inputFile: string;
@@ -36,6 +42,7 @@ export default class Rust implements Language {
       solutionFile: this.solutionFilePath,
     };
   }
+
   public getFileContents(path: string): string {
     if (path === this.solutionFilePath) {
       return this.getSolutionFileContents();

@@ -22,6 +22,10 @@ export default class TypescriptDeno implements Language {
     return ['mkdir', '-p', this.getSolutionRootPath()];
   }
 
+  public getPostInstallCommand(): string[] {
+    return [];
+  }
+
   public getFileNames() {
     return {
       inputFile: `${this.year}/day${this.day}/input.txt`,
