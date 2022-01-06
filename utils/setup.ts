@@ -6,6 +6,16 @@ import { ensureDir, ensureFile } from 'https://deno.land/std/fs/mod.ts';
 import allLanguages from './languages/index.ts';
 import { getManifestLocation, addDayToManifest } from './manifest.ts';
 
+const runCommands = (commands: string[]) =>
+  Promise.all(
+    commands
+      .join(' ')
+      .split('&&')
+      .map((c) => c.trim().split(' '))
+      .map((cmd) => Deno.run({ cmd }))
+      .map((p) => p.status())
+  );
+
 const { yearStr, dayStr, forceLanguage } = parse(Deno.args, {
   string: ['year', 'day', 'part', 'forceLanguage'],
   alias: {
@@ -45,15 +55,7 @@ await ensureFile(getManifestLocation(year));
 const selected = new SelectedLanguage(year, day);
 
 // run the setup commands
-await Promise.all(
-  selected
-    .getSetupCommand()
-    .join(' ')
-    .split('&&')
-    .map((c) => c.trim().split(' '))
-    .map((cmd) => Deno.run({ cmd }))
-    .map((p) => p.status())
-);
+await runCommands(selected.getSetupCommand());
 
 // make sure that the directory and an input file exists
 const { inputFile, solutionFile, ...others } = selected.getFileNames();
@@ -69,6 +71,9 @@ Object.values(others).forEach(async (file) => {
   await ensureFile(file);
   await Deno.writeTextFile(file, selected.getFileContents(file));
 });
+
+// run any post install commands
+await runCommands(selected.getPostInstallCommand());
 
 // read and append to the manifest file
 const manifestStr = await Deno.readTextFile('./2022/manifest.json');
