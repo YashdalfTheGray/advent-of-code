@@ -73,7 +73,9 @@ Object.values(others).forEach(async (file) => {
 });
 
 // run any post install commands
-await runCommands(selected.getPostInstallCommand());
+if (selected.getPostInstallCommand().length > 0) {
+  await runCommands(selected.getPostInstallCommand());
+}
 
 // read and append to the manifest file
 const manifestStr = await Deno.readTextFile('./2022/manifest.json');
