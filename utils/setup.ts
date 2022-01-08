@@ -5,6 +5,7 @@ import { ensureDir, ensureFile } from 'https://deno.land/std/fs/mod.ts';
 
 import allLanguages from './languages/index.ts';
 import { getManifestLocation, addDayToManifest } from './manifest.ts';
+import { getHelpMessage } from './help.ts';
 
 const runCommands = (commands: string[]) =>
   Promise.all(
@@ -16,14 +17,23 @@ const runCommands = (commands: string[]) =>
       .map((p) => p.status())
   );
 
-const { yearStr, dayStr, forceLanguage } = parse(Deno.args, {
+const { yearStr, dayStr, forceLanguage, help } = parse(Deno.args, {
   string: ['year', 'day', 'part', 'forceLanguage'],
   alias: {
+    help: 'h',
     yearStr: ['year', 'y'],
     dayStr: ['day', 'd'],
     forceLanguage: ['force-language', 'f'],
   },
 });
+
+if (help) {
+  if (yearStr || dayStr || forceLanguage) {
+    console.warn('WARN - Help flag detected, ignoring other flag');
+  }
+  console.log(getHelpMessage());
+  Deno.exit(0);
+}
 
 const year = Number(yearStr);
 const day = Number(dayStr);
