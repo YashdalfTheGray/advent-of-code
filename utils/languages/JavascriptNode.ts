@@ -68,7 +68,7 @@ export default class JavascriptNode implements Language {
 const { readFileSync } = require('fs');
 
 const day1Input = readFileSync('input.txt', 'utf8')
-  .split('\n')
+  .split('\\n')
   .filter((l) => !!l);
 
 module.exports = { day1Input };
@@ -82,7 +82,8 @@ module.exports = { day1Input };
 {
   "name": "day${this.day}",
   "scripts": {
-    "test": "ava"
+    "test": "ava",
+    "start": "node solution.js"
   }
 }
     `
