@@ -57,7 +57,7 @@ export default class Ruby implements Language {
 
 # Solution just contains the input read in
 module Solution
-  INPUT = File.read('input.txt').split("\n").reject(&:empty?)
+  INPUT = File.read('input.txt').split("\\n").reject(&:empty?)
 end
 
 puts Solution::INPUT
