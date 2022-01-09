@@ -88,7 +88,7 @@ if (selected.getPostInstallCommand().length > 0) {
 }
 
 // read and append to the manifest file
-const manifestStr = await Deno.readTextFile('./2022/manifest.json');
+const manifestStr = await Deno.readTextFile(`./${year}/manifest.json`);
 const manifest = (() => {
   try {
     return JSON.parse(manifestStr);
