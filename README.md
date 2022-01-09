@@ -6,6 +6,7 @@ The folder structure is sorted by year, then day of problem.
 
 | Year | Language                                      |
 | ---- | --------------------------------------------- |
+| 2015 | Variety (see `2015/manifest.json`)            |
 | 2020 | Rust                                          |
 | 2021 | TypeScript (using [Deno](https://deno.land/)) |
 
