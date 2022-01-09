@@ -3,17 +3,14 @@
 
 const test = require('ava');
 
-const { day1Input, part1 } = require('./solution');
+const { day1Input, part1, part2 } = require('./solution');
 
 test('sanity test', (t) => {
   t.truthy(day1Input);
 });
 
-test('[part1] () means 0', (t) => {
-  t.is(part1('()'), 0);
-});
-
 [
+  { input: '()', output: 0 },
   { input: '(())', output: 0 },
   { input: '()()', output: 0 },
   { input: '(((', output: 3 },
@@ -27,7 +24,19 @@ test('[part1] () means 0', (t) => {
 ].forEach(({ input, output }) => {
   test(`[part1] ${
     input.length > 10 ? `${input.substr(0, 10)}...` : input
-  } means ${output}`, (t) => {
+  } goes to floor ${output}`, (t) => {
     t.is(part1(input), output);
+  });
+});
+
+[
+  { input: ')', output: 1 },
+  { input: '()())', output: 5 },
+  { input: day1Input, output: 1795 },
+].forEach(({ input, output }) => {
+  test(`[part2] ${
+    input.length > 10 ? `${input.substr(0, 10)}...` : input
+  } goes into the basement at position ${output}`, (t) => {
+    t.is(part2(input), output);
   });
 });

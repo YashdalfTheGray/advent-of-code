@@ -22,4 +22,16 @@ const part1 = (input) =>
       0
     );
 
-module.exports = { day1Input, part1 };
+const part2 = (input) => {
+  let floor = 0;
+
+  for (let i = 0; i < input.length; i++) {
+    const char = input[i];
+    floor += char === '(' ? 1 : -1;
+    if (floor < 0) {
+      return i + 1;
+    }
+  }
+};
+
+module.exports = { day1Input, part1, part2 };
