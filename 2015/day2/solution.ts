@@ -3,8 +3,27 @@
 // https://adventofcode.com/2015/day/2
 // input: day2/input.txt
 
+type GiftDimensions = {
+  l: number;
+  w: number;
+  h: number;
+};
+
 const day2Input = (await Deno.readTextFile('input.txt'))
   .split('\n')
-  .filter((l) => !!l);
+  .filter((l) => !!l)
+  .map((l) => l.split('x'))
+  .map(([ls, ws, hs]) => ({
+    l: parseInt(ls, 10),
+    w: parseInt(ws, 10),
+    h: parseInt(hs, 10),
+  }));
 
-export { day2Input };
+const part1 = (input: GiftDimensions[]): number =>
+  input.reduce((total, g) => {
+    const surfaceArea = 2 * g.l * g.w + 2 * g.w * g.h + 2 * g.h * g.l;
+    const smallestSide = Math.min(g.l * g.w, g.w * g.h, g.h * g.l);
+    return total + surfaceArea + smallestSide;
+  }, 0);
+
+export { day2Input, part1 };
