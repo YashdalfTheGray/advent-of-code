@@ -19,11 +19,25 @@ const day2Input = (await Deno.readTextFile('input.txt'))
     h: parseInt(hs, 10),
   }));
 
+const perimeter = (l: number, h: number) => 2 * l + 2 * h;
+const surfaceArea = (l: number, w: number, h: number) =>
+  2 * l * w + 2 * w * h + 2 * h * l;
+
 const part1 = (input: GiftDimensions[]): number =>
-  input.reduce((total, g) => {
-    const surfaceArea = 2 * g.l * g.w + 2 * g.w * g.h + 2 * g.h * g.l;
-    const smallestSide = Math.min(g.l * g.w, g.w * g.h, g.h * g.l);
-    return total + surfaceArea + smallestSide;
+  input.reduce((total, { l, w, h }) => {
+    const smallestSide = Math.min(l * w, w * h, h * l);
+    return total + surfaceArea(l, w, h) + smallestSide;
   }, 0);
 
-export { day2Input, part1 };
+const part2 = (input: GiftDimensions[]): number =>
+  input.reduce((totalRibbon, { l, w, h }) => {
+    const smallestSide = Math.min(
+      perimeter(l, w),
+      perimeter(w, h),
+      perimeter(h, l)
+    );
+    const bow = l * w * h;
+    return totalRibbon + smallestSide + bow;
+  }, 0);
+
+export { day2Input, part1, part2 };
