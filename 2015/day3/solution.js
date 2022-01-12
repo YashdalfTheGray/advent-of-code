@@ -7,6 +7,39 @@ const { readFileSync } = require('fs');
 
 const day1Input = readFileSync('input.txt', 'utf8')
   .split('\n')
-  .filter((l) => !!l);
+  .filter((l) => !!l)[0]
+  .split('');
 
-module.exports = { day1Input };
+/**
+ * Advent of code 2015 day 3 part 1
+ * @param {Array<string>} input instructions to follow
+ */
+const part1 = (input) => {
+  const position = { x: 0, y: 0 };
+  const visited = new Set();
+  visited.add(`${position.x},${position.y}`);
+
+  input.forEach((i) => {
+    switch (i) {
+      case '^':
+        position.y += 1;
+        break;
+      case 'v':
+        position.y -= 1;
+        break;
+      case '>':
+        position.x += 1;
+        break;
+      case '<':
+        position.x -= 1;
+        break;
+      default:
+        break;
+    }
+    visited.add(`${position.x},${position.y}`);
+  });
+
+  return visited.size;
+};
+
+module.exports = { day1Input, part1 };
