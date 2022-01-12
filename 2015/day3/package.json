@@ -1,0 +1,10 @@
+{
+  "name": "day3",
+  "scripts": {
+    "test": "ava",
+    "start": "node solution.js"
+  },
+  "devDependencies": {
+    "ava": "^4.0.1"
+  }
+}
