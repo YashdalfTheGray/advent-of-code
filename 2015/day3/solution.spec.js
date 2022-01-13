@@ -3,16 +3,16 @@
 
 const test = require('ava');
 
-const { day1Input, part1 } = require('./solution');
+const { day1Input, part1, part2 } = require('./solution');
 
 test('sanity test', (t) => {
   t.truthy(day1Input);
 });
 
 [
-  { input: '>'.split(''), p1Expected: 2, p2Expected: 0 },
-  { input: '^>v<'.split(''), p1Expected: 4, p2Expected: 0 },
-  { input: '^v^v^v^v^v'.split(''), p1Expected: 2, p2Expected: 0 },
+  { input: '>'.split(''), p1Expected: 2, p2Expected: 3 },
+  { input: '^>v<'.split(''), p1Expected: 4, p2Expected: 4 },
+  { input: '^v^v^v^v^v'.split(''), p1Expected: 2, p2Expected: 11 },
   { input: day1Input, p1Expected: 2592, p2Expected: 0 },
 ].forEach((tc) => {
   test(`[part1] Instructions ${
@@ -21,5 +21,13 @@ test('sanity test', (t) => {
       : tc.input.join('')
   } deliver to ${tc.p1Expected} houses`, (t) => {
     t.is(part1(tc.input), tc.p1Expected);
+  });
+
+  test(`[part2] Instructions ${
+    tc.input.length > 10
+      ? `${tc.input.slice(0, 10).join('')}...`
+      : tc.input.join('')
+  } deliver to ${tc.p2Expected} houses`, (t) => {
+    t.is(part2(tc.input), tc.p2Expected);
   });
 });
