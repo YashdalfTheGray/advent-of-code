@@ -10,10 +10,11 @@ test('sanity test', (t) => {
 });
 
 [
-  { input: '>'.split(''), p1Expected: 2, p2Expected: 3 },
-  { input: '^>v<'.split(''), p1Expected: 4, p2Expected: 4 },
+  { input: '>'.split(''), p1Expected: 2, p2Expected: 2 },
+  { input: '^v'.split(''), p1Expected: 2, p2Expected: 3 },
+  { input: '^>v<'.split(''), p1Expected: 4, p2Expected: 3 },
   { input: '^v^v^v^v^v'.split(''), p1Expected: 2, p2Expected: 11 },
-  { input: day1Input, p1Expected: 2592, p2Expected: 0 },
+  { input: day1Input, p1Expected: 2592, p2Expected: 2360 },
 ].forEach((tc) => {
   test(`[part1] Instructions ${
     tc.input.length > 10

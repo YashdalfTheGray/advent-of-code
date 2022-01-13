@@ -47,10 +47,8 @@ const part1 = (input) => {
  * @param {Array<string>} input instructions to follow
  */
 const part2 = (input) => {
-  const santaVisited = new Set();
-  santaVisited.add(`0,0`);
-
-  const robotVisited = new Set();
+  const anyoneVisited = new Set();
+  anyoneVisited.add(`0,0`);
 
   let santaPosition = { x: 0, y: 0 };
   let roboPosition = { x: 0, y: 0 };
@@ -74,12 +72,10 @@ const part2 = (input) => {
       default:
         break;
     }
-    isSanta
-      ? santaVisited.add(`${position.x},${position.y}`)
-      : robotVisited.add(`${position.x},${position.y}`);
+    anyoneVisited.add(`${position.x},${position.y}`);
   });
 
-  return santaVisited.size + robotVisited.size;
+  return anyoneVisited.size;
 };
 
 module.exports = { day1Input, part1, part2 };
