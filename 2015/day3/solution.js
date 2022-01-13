@@ -42,4 +42,44 @@ const part1 = (input) => {
   return visited.size;
 };
 
-module.exports = { day1Input, part1 };
+/**
+ * Advent of code 2015 day 3 part 2
+ * @param {Array<string>} input instructions to follow
+ */
+const part2 = (input) => {
+  const santaVisited = new Set();
+  santaVisited.add(`0,0`);
+
+  const robotVisited = new Set();
+
+  let santaPosition = { x: 0, y: 0 };
+  let roboPosition = { x: 0, y: 0 };
+
+  input.forEach((i, idx) => {
+    const isSanta = idx % 2 === 0;
+    const position = isSanta ? santaPosition : roboPosition;
+    switch (i) {
+      case '^':
+        position.y += 1;
+        break;
+      case 'v':
+        position.y -= 1;
+        break;
+      case '>':
+        position.x += 1;
+        break;
+      case '<':
+        position.x -= 1;
+        break;
+      default:
+        break;
+    }
+    isSanta
+      ? santaVisited.add(`${position.x},${position.y}`)
+      : robotVisited.add(`${position.x},${position.y}`);
+  });
+
+  return santaVisited.size + robotVisited.size;
+};
+
+module.exports = { day1Input, part1, part2 };
