@@ -23,4 +23,17 @@ const part1 = (input) =>
       : niceCount;
   }, 0);
 
-module.exports = { day5Input, part1 };
+/**
+ * Advent of code 2015 day 5 part 2
+ * @param {Array<string>} input the list of strings to evaluate
+ */
+const part2 = (input) =>
+  input.reduce((niceCount, line) => {
+    const hasDoublePair = /(..).*\1/.test(line);
+    const hasRepeatedLetterWithSpacing = /(.).\1/.test(line);
+    return hasDoublePair && hasRepeatedLetterWithSpacing
+      ? niceCount + 1
+      : niceCount;
+  }, 0);
+
+module.exports = { day5Input, part1, part2 };
