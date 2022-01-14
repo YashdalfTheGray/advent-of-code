@@ -98,10 +98,10 @@ module.exports = { day1Input };
 
 const test = require('ava');
 
-const { day1Input } = require('./solution');
+const { day${this.day}Input } = require('./solution');
 
 test('sanity test', (t) => {
-  t.truthy(day1Input);
+  t.truthy(day${this.day}Input);
 });
     `
       .trim()
