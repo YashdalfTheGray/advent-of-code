@@ -5,8 +5,22 @@
 
 const { readFileSync } = require('fs');
 
-const day1Input = readFileSync('input.txt', 'utf8')
+const day5Input = readFileSync('input.txt', 'utf8')
   .split('\n')
   .filter((l) => !!l);
 
-module.exports = { day1Input };
+/**
+ * Advent of code 2015 day 5 part 1
+ * @param {Array<string>} input the list of strings to evaluate
+ */
+const part1 = (input) =>
+  input.reduce((niceCount, line) => {
+    const hasThreeVowels = /[aeiou].*[aeiou].*[aeiou]/.test(line);
+    const hasDoubleLetter = /(.)\1/.test(line);
+    const hasBadSequence = /ab|cd|pq|xy/.test(line);
+    return hasThreeVowels && hasDoubleLetter && !hasBadSequence
+      ? niceCount + 1
+      : niceCount;
+  }, 0);
+
+module.exports = { day5Input, part1 };
