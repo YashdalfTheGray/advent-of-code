@@ -3,8 +3,27 @@
 
 const test = require('ava');
 
-const { day1Input } = require('./solution');
+const { day5Input, part1 } = require('./solution');
 
 test('sanity test', (t) => {
-  t.truthy(day1Input);
+  t.truthy(day5Input);
+});
+
+[
+  {
+    input: [
+      'ugknbfddgicrmopn',
+      'aaa',
+      'jchzalrnumimnmhp',
+      'haegwjzuvuyypxyu',
+      'dvszwmarrgswjxmb',
+    ],
+    p1Expected: 2,
+    p2Expected: 0,
+  },
+  { input: day5Input, p1Expected: 236, p2Expected: 0 },
+].forEach((tc) => {
+  test(`[part1] input of length ${tc.input.length} has ${tc.p1Expected} nice strings`, (t) => {
+    t.is(part1(tc.input), tc.p1Expected);
+  });
 });
