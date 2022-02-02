@@ -51,4 +51,36 @@ const part1 = (input: string[]) => {
   );
 };
 
-export { day6Input, parseCommand, part1 };
+const part2 = (input: string[]) => {
+  const lightGrid = new Array(1000).fill(0).map(() => new Array(1000).fill(0));
+
+  input.map(parseCommand).forEach(({ action, start, end }) => {
+    for (let x = start[0]; x <= end[0]; x++) {
+      for (let y = start[1]; y <= end[1]; y++) {
+        switch (action) {
+          case 'turn on':
+            lightGrid[x][y] += 1;
+            break;
+          case 'turn off':
+            lightGrid[x][y] -= 1;
+            if (lightGrid[x][y] < 0) {
+              lightGrid[x][y] = 0;
+            }
+            break;
+          case 'toggle':
+            lightGrid[x][y] += 2;
+            break;
+          default:
+            throw new Error(`Unknown action: ${action}`);
+        }
+      }
+    }
+  });
+
+  return lightGrid.reduce(
+    (acc, row) => acc + row.reduce((acc, cell) => acc + cell, 0),
+    0
+  );
+};
+
+export { day6Input, parseCommand, part1, part2 };
