@@ -7,4 +7,19 @@ const day6Input = (await Deno.readTextFile('input.txt'))
   .split('\n')
   .filter((l) => !!l);
 
-export { day6Input };
+const parseCommand = (command: string) => {
+  const matches = command.match(/(.*) (\d+),(\d+) through (\d+),(\d+)/)!;
+  return {
+    action: matches[1],
+    start: [
+      Math.min(parseInt(matches[2]), parseInt(matches[4])),
+      Math.min(parseInt(matches[3]), parseInt(matches[5])),
+    ],
+    end: [
+      Math.max(parseInt(matches[2]), parseInt(matches[4])),
+      Math.max(parseInt(matches[3]), parseInt(matches[5])),
+    ],
+  };
+};
+
+export { day6Input, parseCommand };
