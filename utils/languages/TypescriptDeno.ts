@@ -83,7 +83,7 @@ import { assertExists } from "https://deno.land/std/testing/asserts.ts";
 
 import { day${this.day}Input } from "./solution.ts";
 
-Deno.test('sanity test', () => {
+Deno.test('sanity', () => {
   assertExists(day${this.day}Input);
 });
     `

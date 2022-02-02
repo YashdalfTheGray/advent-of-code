@@ -100,7 +100,7 @@ const test = require('ava');
 
 const { day${this.day}Input } = require('./solution');
 
-test('sanity test', (t) => {
+test('sanity', (t) => {
   t.truthy(day${this.day}Input);
 });
     `
