@@ -3,6 +3,7 @@
 // https://adventofcode.com/2015/day/7
 // input: day7/input.txt
 
+mod logic_node;
 mod utils;
 
 fn main() {
