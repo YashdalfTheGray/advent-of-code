@@ -40,13 +40,10 @@ impl FromStr for LogicNode<u16> {
     type Err = ParseIntError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut iter = s.split("->");
+        let mut parts: Vec<String> = s.split("->").map(|s| s.to_string()).collect();
+        let mut _lhs = parts.pop().unwrap().trim().to_string();
+        let output_wire = parts.pop().unwrap().trim().to_string();
 
-        Ok(Self::new(
-            "a".to_string(),
-            Operation::Identity(0),
-            None,
-            None,
-        ))
+        Ok(Self::new(output_wire, Operation::Identity(0), None, None))
     }
 }
