@@ -35,47 +35,61 @@ impl<T> LogicNode<T> {
             right,
         }
     }
-
-    fn parse_command(s: &str) -> IResult<&str, (&str, &str)> {
-        let (i, lhs) = take_until(" ")(s)?;
-        let (i, _) = tag(" -> ")(i)?;
-        let (i, rhs) = rest(i)?;
-        Ok((i, (lhs, rhs)))
-    }
-
-    fn computation(s: &str) -> IResult<&str, (&str, &str, &str)> {
-        let (i, lhs) = take_until(" ")(s)?;
-        let (i, operation) = alt((
-            tag("AND"),
-            tag("OR"),
-            tag("NOT"),
-            tag("LSHIFT"),
-            tag("RSHIFT"),
-        ))(i)?;
-        let (i, rhs) = rest(i)?;
-
-        Ok((i, (lhs, operation, rhs)))
-    }
 }
 
 impl FromStr for LogicNode<u16> {
     type Err = ParseIntError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match Self::parse_command(s).finish() {
-            Ok((_, (lhs, rhs))) => {
-                // let output_wire = rhs.to_string();
-                // let (i, (op, left, right)) = Self::computation(lhs)?;
-                // Ok(Self::new(output_wire, op, left, right))
-                print!("lhs: {} | rhs: {}", lhs, rhs);
+        let mut parts = s.split(" -> ");
+        let lhs = parts.next().unwrap();
+        let output_wire = parts.next().unwrap();
+
+        match lhs.parse() {
+            Ok(value) => Ok(Self::new(
+                output_wire.to_string(),
+                Operation::NumberValue(value),
+                None,
+                None,
+            )),
+            Err(_) => {
+                let mut lhs_parts = lhs.split_whitespace().collect::<Vec<&str>>();
+                let left_wire_or_value = lhs_parts.remove(0);
+                let left_node = match left_wire_or_value.parse() {
+                    Ok(value) => Operation::NumberValue(value),
+                    Err(_) => Operation::Wire(left_wire_or_value.to_string()),
+                };
+                let op = lhs_parts.remove(0);
+                let right_wire_or_value = lhs_parts.remove(0);
+                let right_value = match right_wire_or_value.parse() {
+                    Ok(value) => Operation::NumberValue(value),
+                    Err(_) => Operation::Wire(right_wire_or_value.to_string()),
+                };
+
+                Ok(Self::new(
+                    output_wire.to_string(),
+                    match op {
+                        "AND" => Operation::And,
+                        "OR" => Operation::Or,
+                        "NOT" => Operation::Not,
+                        "LSHIFT" => Operation::Lshift,
+                        "RSHIFT" => Operation::Rshift,
+                        _ => panic!("Unknown operation: {}", op),
+                    },
+                    Some(Box::new(Self::new(
+                        left_wire_or_value.to_string(),
+                        left_node,
+                        None,
+                        None,
+                    ))),
+                    Some(Box::new(Self::new(
+                        right_wire_or_value.to_string(),
+                        right_value,
+                        None,
+                        None,
+                    ))),
+                ))
             }
-            Err(_) => {}
-        };
-        Ok(Self::new(
-            "a".to_string(),
-            Operation::Identity(0),
-            None,
-            None,
-        ))
+        }
     }
 }
