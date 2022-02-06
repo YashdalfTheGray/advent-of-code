@@ -1,12 +1,3 @@
-use nom::{
-    branch::alt,
-    bytes::complete::{tag, take_until, take_while},
-    character::is_digit,
-    combinator::rest,
-    complete::take,
-    sequence::separated_pair,
-    Finish, IResult,
-};
 use std::{num::ParseIntError, str::FromStr};
 
 #[derive(Debug)]
@@ -16,7 +7,8 @@ pub enum Operation<T> {
     Not,
     Lshift,
     Rshift,
-    Identity(T),
+    NumberValue(T),
+    Wire(String),
 }
 
 pub type ChildLogicNode<T> = Option<Box<LogicNode<T>>>;
