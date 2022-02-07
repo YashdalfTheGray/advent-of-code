@@ -1,6 +1,6 @@
 use std::{num::ParseIntError, str::FromStr};
 
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq)]
 pub enum Operation<T> {
     And,
     Or,
