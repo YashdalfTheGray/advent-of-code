@@ -106,5 +106,33 @@ impl FromStr for LogicNode<u16> {
                 ))
             }
         }
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_value_to_wire() {
+        let input = "123 -> x";
+        let node = input.parse::<LogicNode<u16>>().unwrap();
+
+        println!("{:#?}", node);
+        assert_eq!(node.output_wire, "x");
+        assert_eq!(node.op, Operation::NumberValue(123));
+    }
+
+    #[test]
+    fn test_parse_binary_operation_to_wire() {
+        let input = "x AND y -> z";
+        let node = input.parse::<LogicNode<u16>>().unwrap();
+
+        println!("{:#?}", node);
+        assert_eq!(node.output_wire, "z");
+        assert_eq!(node.op, Operation::And);
+        assert_eq!(node.left.unwrap().output_wire, "x");
+        assert_eq!(node.right.unwrap().output_wire, "y");
     }
 }
