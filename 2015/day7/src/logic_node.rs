@@ -11,6 +11,21 @@ pub enum Operation<T> {
     Wire(String),
 }
 
+impl FromStr for Operation<u16> {
+    type Err = ParseIntError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "AND" => Ok(Operation::And),
+            "OR" => Ok(Operation::Or),
+            "NOT" => Ok(Operation::Not),
+            "LSHIFT" => Ok(Operation::Lshift),
+            "RSHIFT" => Ok(Operation::Rshift),
+            _ => panic!("Unknown operation: {}", s),
+        }
+    }
+}
+
 pub type ChildLogicNode<T> = Option<Box<LogicNode<T>>>;
 
 #[derive(Debug)]
