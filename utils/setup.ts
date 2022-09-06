@@ -1,7 +1,7 @@
 #!/usr/bin/env -S deno run --allow-write --allow-read --allow-run
 
-import { parse } from 'https://deno.land/std/flags/mod.ts';
-import { ensureDir, ensureFile } from 'https://deno.land/std/fs/mod.ts';
+import { parse } from 'https://deno.land/std@0.123.0/flags/mod.ts';
+import { ensureDir, ensureFile } from 'https://deno.land/std@0.123.0/fs/mod.ts';
 
 import allLanguages from './languages/index.ts';
 import { getManifestLocation, addDayToManifest } from './manifest.ts';
