@@ -1,4 +1,4 @@
-import Golang from './golang.ts';
+import Golang from './Golang.ts';
 import JavascriptNode from './JavascriptNode.ts';
 import Ruby from './Ruby.ts';
 import Rust from './Rust.ts';
