@@ -8,6 +8,16 @@
 # Solution just contains the input read in
 module Solution
   INPUT = File.read('input.txt').split("\n").reject(&:empty?)
+
+  def find_file_calibration_value input_file
+    input_file.reduce do |sum, line|
+      sum + find_line_calibration_value line
+    end
+  end
+
+  def find_line_calibration_value line
+    0
+  end
 end
 
 puts Solution::INPUT
