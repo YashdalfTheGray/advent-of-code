@@ -9,15 +9,16 @@
 module Solution
   INPUT = File.read('input.txt').split("\n").reject(&:empty?)
 
-  def find_file_calibration_value input_file
-    input_file.reduce do |sum, line|
-      sum + find_line_calibration_value line
+  def self.find_file_calibration_value input_file
+    input_file.reduce(0) do |sum, line|
+      sum + find_line_calibration_value(line)
     end
   end
 
-  def find_line_calibration_value line
-    0
+  def self.find_line_calibration_value line
+    first_number_index = line.index(/\d{1}/)
+    last_number_index = line.rindex(/\d{1}/)
+
+    Integer("#{line[first_number_index]}#{line[last_number_index]}")
   end
 end
-
-puts Solution::INPUT
