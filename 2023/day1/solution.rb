@@ -9,6 +9,18 @@
 module Solution
   INPUT = File.read('input.txt').split("\n").reject(&:empty?)
 
+  NUMBER_WORD_TO_INTEGER_STRING = {
+    one: '1',
+    two: '2',
+    three: '3',
+    four: '4',
+    five: '5',
+    six: '6',
+    seven: '7',
+    eight: '8',
+    nine: '9'
+  }
+
   def self.find_file_calibration_value input_file
     input_file.reduce(0) do |sum, line|
       sum + find_line_calibration_value(line)
@@ -20,5 +32,26 @@ module Solution
     last_number_index = line.rindex(/\d{1}/)
 
     Integer("#{line[first_number_index]}#{line[last_number_index]}")
+  end
+
+  def self.find_file_calibration_value_fixed input_file
+    input_file.reduce(0) do |sum, line|
+      sum + find_line_calibration_value_fixed(line)
+    end
+  end
+
+  def self.find_line_calibration_value_fixed line
+    matcher = Regexp.new('(one|two|three|four|five|six|seven|eight|nine|\d)')
+    first, *rest, last = line.scan(matcher)
+
+    if (last.nil?)
+      last = first
+    end
+
+    Integer("#{convert_to_integer!(first[0])}#{convert_to_integer!(last[0])}")
+  end
+
+  def self.convert_to_integer! string_input
+    string_input.length > 1 ? NUMBER_WORD_TO_INTEGER_STRING[string_input.to_sym] : string_input
   end
 end
