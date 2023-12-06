@@ -3,6 +3,7 @@
 **/*.png
 2021/test*
 2021/output.json
+*.out
 
 # File created using '.gitignore Generator' for Visual Studio Code: https://bit.ly/vscode-gig
 
