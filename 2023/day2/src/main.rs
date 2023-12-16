@@ -3,6 +3,9 @@
 // https://adventofcode.com/2023/day/2
 // input: day2/input.txt
 
+#[macro_use(lazy_static)]
+extern crate lazy_static;
+
 mod game_node;
 mod utils;
 

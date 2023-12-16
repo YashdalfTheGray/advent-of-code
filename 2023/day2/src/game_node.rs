@@ -1,3 +1,4 @@
+use regex::Regex;
 use std::{num::ParseIntError, str::FromStr};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -5,6 +6,16 @@ pub struct CubeSet {
     pub red: u64,
     pub green: u64,
     pub blue: u64,
+}
+
+impl CubeSet {
+    pub fn new() -> CubeSet {
+        CubeSet {
+            red: 0,
+            green: 0,
+            blue: 0,
+        }
+    }
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -46,7 +57,46 @@ impl GameNode {
 impl FromStr for GameNode {
     type Err = ParseIntError;
 
-    fn from_str(_s: &str) -> Result<Self, Self::Err> {
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        lazy_static! {
+            pub static ref GAME_DETECTOR: Regex = Regex::new(r"(\d+)$").unwrap();
+            pub static ref CUBE_DETECTOR: Regex = Regex::new(r"(\d+) (red|green|blue)").unwrap();
+        }
+
+        let parts: Vec<&str> = s.split(": ").collect();
+        println!("{:#?}", parts);
+
+        let game_matches = GAME_DETECTOR.captures(parts[0]).unwrap();
+        let game_number = game_matches.get(1).unwrap().as_str();
+        println!("id = {:#?}", game_number);
+
+        let reveal_strings = parts[1].split("; ").collect::<Vec<&str>>();
+        println!("{:#?}", reveal_strings);
+
+        let reveals = reveal_strings
+            .iter()
+            .map(|rs| {
+                return rs.split(", ").fold(CubeSet::new(), |mut acc, p| {
+                    let cube_matches = CUBE_DETECTOR.captures(p).unwrap();
+                    let cube_number = cube_matches.get(1).unwrap().as_str();
+                    let cube_color = cube_matches.get(2).unwrap().as_str();
+                    println!("{:#?}", cube_number);
+                    println!("{:#?}", cube_color);
+
+                    match cube_color {
+                        "red" => acc.red += cube_number.parse::<u64>().unwrap(),
+                        "green" => acc.green += cube_number.parse::<u64>().unwrap(),
+                        "blue" => acc.blue += cube_number.parse::<u64>().unwrap(),
+                        _ => panic!("Invalid cube color"),
+                    }
+
+                    return acc;
+                });
+            })
+            .collect::<Vec<CubeSet>>();
+
+        println!("{:#?}", reveals);
+
         Ok(Self::blank())
     }
 }
