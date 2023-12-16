@@ -50,3 +50,16 @@ impl FromStr for GameNode {
         Ok(Self::blank())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_from_string() {
+        let game = "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green"
+            .parse::<GameNode>()
+            .unwrap();
+        assert_eq!(game.number_of_reveals, 0)
+    }
+}
