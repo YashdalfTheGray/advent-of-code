@@ -28,7 +28,9 @@ impl CubeSet {
 pub struct GameNode {
     pub id: String,
     pub number_of_reveals: u64,
-    pub highest_cubeset: CubeSet,
+    pub highest_red: SeenIntValue,
+    pub highest_green: SeenIntValue,
+    pub highest_blue: SeenIntValue,
     pub reveals: Vec<CubeSet>,
 }
 
@@ -37,10 +39,17 @@ impl GameNode {
         Self {
             id: "".to_owned(),
             number_of_reveals: 0,
-            highest_cubeset: CubeSet {
-                red: 0,
-                green: 0,
-                blue: 0,
+            highest_red: SeenIntValue {
+                value: 0,
+                seen_at: 0,
+            },
+            highest_green: SeenIntValue {
+                value: 0,
+                seen_at: 0,
+            },
+            highest_blue: SeenIntValue {
+                value: 0,
+                seen_at: 0,
             },
             reveals: [].to_vec(),
         }
@@ -50,10 +59,17 @@ impl GameNode {
         Self {
             id,
             number_of_reveals,
-            highest_cubeset: CubeSet {
-                red: 0,
-                green: 0,
-                blue: 0,
+            highest_red: SeenIntValue {
+                value: 0,
+                seen_at: 0,
+            },
+            highest_green: SeenIntValue {
+                value: 0,
+                seen_at: 0,
+            },
+            highest_blue: SeenIntValue {
+                value: 0,
+                seen_at: 0,
             },
             reveals: [].to_vec(),
         }
