@@ -2,6 +2,12 @@ use regex::Regex;
 use std::{num::ParseIntError, str::FromStr};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct SeenIntValue {
+    pub value: u64,
+    pub seen_at: u64,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CubeSet {
     pub red: u64,
     pub green: u64,
